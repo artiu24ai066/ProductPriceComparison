@@ -1,0 +1,88 @@
+@import "./variables.css";
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@500;600;700;800&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+
+    font-family: 'Inter', sans-serif;
+
+    background: var(--background-dark);
+
+    color: var(--white);
+
+    overflow-x: hidden;
+
+}
+
+a {
+
+    text-decoration: none;
+
+    color: inherit;
+
+}
+
+button {
+
+    border: none;
+
+    cursor: pointer;
+
+    font-family: inherit;
+
+}
+
+img {
+
+    display: block;
+
+    width: 100%;
+
+}
+
+.container {
+
+    width: min(90%, 1300px);
+
+    margin: auto;
+
+}
+
+section {
+
+    padding: 100px 0;
+
+}
+
+h1,
+h2,
+h3,
+h4 {
+
+    font-family: "Poppins", sans-serif;
+
+}
+
+::-webkit-scrollbar {
+
+    width: 8px;
+
+}
+
+::-webkit-scrollbar-thumb {
+
+    background: var(--primary);
+
+    border-radius: 20px;
+
+}

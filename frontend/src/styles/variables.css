@@ -1,0 +1,39 @@
+:root {
+
+    /* ===========================
+     COLORS
+  ============================ */
+
+    --primary: #ff8a3d;
+    --primary-dark: #ff6a00;
+    --secondary: #4f8cff;
+
+    --background-dark: #09090b;
+    --background-light: #f8f5ef;
+
+    --card-dark: rgba(255, 255, 255, 0.06);
+    --glass-border: rgba(255, 255, 255, 0.08);
+
+    --white: #ffffff;
+    --text-light: #b6b8c2;
+    --text-dark: #111827;
+
+    --shadow:
+        0 10px 35px rgba(0, 0, 0, .25);
+
+    /* ===========================
+      BORDER RADIUS
+  ============================ */
+
+    --radius-sm: 12px;
+    --radius-md: 20px;
+    --radius-lg: 30px;
+    --radius-pill: 999px;
+
+    /* ===========================
+      TRANSITION
+  ============================ */
+
+    --transition: .35s ease;
+
+}

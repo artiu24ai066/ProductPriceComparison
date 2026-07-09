@@ -434,7 +434,6 @@ body {
 }
 
 @keyframes floatBlob {
-
     0% {
         transform: translate(0, 0) scale(1);
     }
@@ -446,7 +445,6 @@ body {
     100% {
         transform: translate(0, 0) scale(1);
     }
-
 }
 
 /* ======================================
@@ -454,15 +452,11 @@ body {
 ====================================== */
 
 .auth-card {
-
     transition: all .4s ease;
-
 }
 
 .auth-card:hover {
-
     transform: translateY(-4px);
-
 }
 
 /* ======================================
@@ -470,15 +464,11 @@ body {
 ====================================== */
 
 .auth-left {
-
     overflow: hidden;
-
 }
 
 .auth-left:hover .auth-image {
-
     transform: scale(1.08);
-
 }
 
 /* ======================================
@@ -486,15 +476,11 @@ body {
 ====================================== */
 
 .input-group {
-
     transition: .3s;
-
 }
 
 .input-group:focus-within {
-
     transform: translateY(-2px);
-
 }
 
 /* ======================================
@@ -502,41 +488,25 @@ body {
 ====================================== */
 
 .auth-btn {
-
     position: relative;
-
     overflow: hidden;
-
 }
 
 .auth-btn::before {
-
     content: "";
-
     position: absolute;
-
     width: 300px;
-
     height: 300px;
-
     background: rgba(255, 255, 255, .15);
-
     border-radius: 50%;
-
     left: -120%;
-
     top: -120%;
-
     transition: .6s;
-
 }
 
 .auth-btn:hover::before {
-
     left: 100%;
-
     top: 100%;
-
 }
 
 /* ======================================
@@ -544,23 +514,16 @@ body {
 ====================================== */
 
 ::-webkit-scrollbar {
-
     width: 8px;
-
 }
 
 ::-webkit-scrollbar-thumb {
-
     background: #ff8a3d;
-
     border-radius: 20px;
-
 }
 
 ::-webkit-scrollbar-track {
-
     background: #111;
-
 }
 
 /* ======================================
@@ -568,33 +531,22 @@ body {
 ====================================== */
 
 @media (max-width:1100px) {
-
     .auth-container {
-
         width: 95%;
-
         grid-template-columns: 1fr;
-
     }
 
     .auth-left {
-
         display: none;
-
     }
 
     .auth-right {
-
         padding: 45px;
-
     }
 
     .auth-card {
-
         max-width: 100%;
-
     }
-
 }
 
 /* ======================================
@@ -602,59 +554,39 @@ body {
 ====================================== */
 
 @media (max-width:768px) {
-
     .auth-page {
-
         padding: 20px;
-
     }
 
     .auth-container {
-
         border-radius: 24px;
-
     }
 
     .auth-right {
-
         padding: 30px;
-
     }
 
     .auth-card h2 {
-
         font-size: 34px;
-
     }
 
     .auth-card>p {
-
         font-size: 14px;
-
     }
 
     .auth-input {
-
         height: 55px;
-
     }
 
     .auth-btn {
-
         height: 55px;
-
     }
 
     .login-options {
-
         flex-direction: column;
-
         align-items: flex-start;
-
         gap: 15px;
-
     }
-
 }
 
 /* ======================================

@@ -1,18 +1,29 @@
-import { Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route, Navigate, BrowserRouter } from "react-router-dom";
 
-import Signup from "./pages/auth/Signup";
-import Login from "./pages/auth/Login";
-import ForgotPassword from "./pages/auth/ForgotPassword";
-import ResetPassword from "./pages/auth/ResetPassword";
+import Home from "./pages/Home.jsx";
+import Signup from "./pages/auth/Signup.jsx";
+import Login from "./pages/auth/Login.jsx";
+import ForgotPassword from "./pages/auth/ForgotPassword.jsx";
+import ResetPassword from "./pages/auth/ResetPassword.jsx";
 
 function App() {
   return (
+    <BrowserRouter>
     <Routes>
-      <Route path="/" element={<Navigate to="/login" replace />} />
+      <Route 
+        path="/" 
+        element={<Home />} 
+      />
 
-      <Route path="/signup" element={<Signup />} />
+      <Route 
+        path="/signup" 
+        element={<Signup />} 
+      />
 
-      <Route path="/login" element={<Login />} />
+      <Route 
+        path="/login" 
+        element={<Login />} 
+      />
 
       <Route
         path="/forgot-password"
@@ -24,6 +35,8 @@ function App() {
         element={<ResetPassword />}
       />
     </Routes>
+    
+    </BrowserRouter>
   );
 }
 
