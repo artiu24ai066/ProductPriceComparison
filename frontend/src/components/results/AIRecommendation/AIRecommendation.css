@@ -1,0 +1,471 @@
+.ai-section{
+
+    margin-top:80px;
+
+}
+
+/* ===========================
+HEADING
+=========================== */
+
+.ai-heading{
+
+    display:flex;
+
+    flex-direction:column;
+
+    align-items:center;
+
+    text-align:center;
+
+    margin-bottom:45px;
+
+}
+
+.ai-heading h2{
+
+    font-size:36px;
+
+    color:white;
+
+    margin:15px 0 12px;
+
+}
+
+.ai-heading p{
+
+    max-width:680px;
+
+    color:#9BA4B5;
+
+    line-height:1.8;
+
+    font-size:16px;
+
+}
+
+/* ===========================
+LAYOUT
+=========================== */
+
+.ai-layout{
+
+    display:grid;
+
+    grid-template-columns:2fr 1fr;
+
+    gap:30px;
+
+}
+
+/* ===========================
+LEFT PANEL
+=========================== */
+
+.ai-left{
+
+    background:#161C24;
+
+    border:1px solid rgba(255,255,255,.06);
+
+    border-radius:28px;
+
+    padding:35px;
+
+}
+
+/* ===========================
+AI PICK
+=========================== */
+
+.ai-pick{
+
+    display:flex;
+
+    gap:22px;
+
+    align-items:flex-start;
+
+    margin-bottom:35px;
+
+}
+
+.ai-icon{
+
+    width:72px;
+
+    height:72px;
+
+    border-radius:22px;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    background:linear-gradient(
+        135deg,
+        #4F8DFF,
+        #6B5BFF
+    );
+
+    color:white;
+
+    flex-shrink:0;
+
+    box-shadow:
+        0 12px 30px rgba(79,141,255,.35);
+
+}
+
+.pick-label{
+
+    color:#4F8DFF;
+
+    font-size:13px;
+
+    font-weight:700;
+
+    letter-spacing:.08em;
+
+}
+
+.ai-pick h3{
+
+    margin:10px 0;
+
+    color:white;
+
+    font-size:30px;
+
+}
+
+.ai-pick p{
+
+    color:#B6BECC;
+
+    line-height:1.8;
+
+}
+
+/* ===========================
+REASONS
+=========================== */
+
+.reason-list{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:16px;
+
+    margin-bottom:35px;
+
+}
+
+.reason-item{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:14px;
+
+    padding:16px 18px;
+
+    background:#1B222C;
+
+    border-radius:16px;
+
+    transition:.3s;
+
+}
+
+.reason-item:hover{
+
+    transform:translateX(8px);
+
+    background:#212933;
+
+}
+
+.reason-item svg{
+
+    color:#22C55E;
+
+}
+
+.reason-item span{
+
+    color:#E3E7EE;
+
+}
+
+/* ===========================
+PREDICTION
+=========================== */
+
+.prediction-card{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:18px;
+
+    padding:22px;
+
+    border-radius:20px;
+
+    background:linear-gradient(
+        135deg,
+        rgba(79,141,255,.14),
+        rgba(255,138,61,.10)
+    );
+
+    border:1px solid rgba(79,141,255,.18);
+
+}
+
+.prediction-card svg{
+
+    color:#4F8DFF;
+
+    flex-shrink:0;
+
+}
+
+.prediction-card h4{
+
+    color:white;
+
+    margin-bottom:8px;
+
+}
+
+.prediction-card p{
+
+    color:#D6DCE8;
+
+    line-height:1.7;
+
+}
+
+.prediction-card strong{
+
+    color:#FF8A3D;
+
+}
+
+/* ===========================
+RIGHT PANEL
+=========================== */
+
+.ai-right{
+
+    background:#161C24;
+
+    border-radius:28px;
+
+    border:1px solid rgba(255,255,255,.06);
+
+    padding:35px;
+
+    display:flex;
+
+    flex-direction:column;
+
+    align-items:center;
+
+}
+
+/* ===========================
+SCORE
+=========================== */
+
+.score-circle{
+
+    width:220px;
+
+    height:220px;
+
+    border-radius:50%;
+
+    display:flex;
+
+    flex-direction:column;
+
+    justify-content:center;
+
+    align-items:center;
+
+    margin-bottom:35px;
+
+    background:
+        radial-gradient(circle,#1C2430,#12171F);
+
+    border:10px solid #4F8DFF;
+
+    box-shadow:
+        0 0 45px rgba(79,141,255,.25);
+
+}
+
+.score-circle span{
+
+    font-size:58px;
+
+    font-weight:700;
+
+    color:white;
+
+}
+
+.score-circle small{
+
+    color:#9BA4B5;
+
+    margin-top:10px;
+
+}
+
+/* ===========================
+SMALL CARDS
+=========================== */
+
+.score-cards{
+
+    width:100%;
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:16px;
+
+}
+
+.score-cards div{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:15px;
+
+    padding:18px;
+
+    border-radius:18px;
+
+    background:#1D2530;
+
+}
+
+.score-cards svg{
+
+    color:#4F8DFF;
+
+}
+
+.score-cards h4{
+
+    color:white;
+
+    margin-bottom:4px;
+
+}
+
+.score-cards span{
+
+    color:#9BA4B5;
+
+    font-size:14px;
+
+}
+
+/* ===========================
+BUTTON
+=========================== */
+
+.best-deal-btn{
+
+    width:100%;
+
+    height:58px;
+
+    margin-top:28px;
+
+    border:none;
+
+    border-radius:18px;
+
+    cursor:pointer;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    gap:10px;
+
+    background:linear-gradient(
+        135deg,
+        #FF8A3D,
+        #FF6D28
+    );
+
+    color:white;
+
+    font-size:16px;
+
+    font-weight:600;
+
+    transition:.35s;
+
+}
+
+.best-deal-btn:hover{
+
+    transform:translateY(-3px);
+
+    box-shadow:
+        0 15px 35px rgba(255,138,61,.30);
+
+}
+
+.best-deal-btn svg{
+
+    transition:.3s;
+
+}
+
+.best-deal-btn:hover svg{
+
+    transform:translateX(4px);
+
+}
+
+/* ===========================
+RESPONSIVE
+=========================== */
+
+@media(max-width:1000px){
+
+    .ai-layout{
+
+        grid-template-columns:1fr;
+
+    }
+
+    .score-circle{
+
+        width:180px;
+
+        height:180px;
+
+    }
+
+}

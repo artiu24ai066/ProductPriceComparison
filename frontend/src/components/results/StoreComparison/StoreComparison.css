@@ -1,0 +1,374 @@
+.store-section{
+
+    margin-top:70px;
+
+}
+
+/* ===========================
+HEADING
+=========================== */
+
+.store-heading{
+
+    margin-bottom:32px;
+
+    display:flex;
+
+    flex-direction:column;
+
+    align-items:center;
+
+    text-align:center;
+
+}
+
+.section-tag{
+
+    display:inline-block;
+
+    padding:8px 16px;
+
+    border-radius:40px;
+
+    background:rgba(79,141,255,.12);
+
+    color:#4F8DFF;
+
+    font-size:13px;
+
+    font-weight:600;
+
+    margin-bottom:18px;
+
+    justify-content:center;
+
+    align-items:center;
+
+    align-self:center;
+
+}
+
+.store-heading h2{
+
+    color:white;
+
+    font-size:36px;
+
+    margin-bottom:12px;
+
+}
+
+.store-heading p{
+
+    color:#9BA4B5;
+
+    font-size:16px;
+
+    max-width:650px;
+
+    line-height:1.7;
+}
+
+/* ===========================
+TABLE
+=========================== */
+
+.store-table{
+
+    border-radius:26px;
+
+    overflow:hidden;
+
+    background:#151A22;
+
+    border:1px solid rgba(255,255,255,.05);
+
+}
+
+/* ===========================
+HEADER
+=========================== */
+
+.table-head{
+
+    display:grid;
+
+    grid-template-columns:
+    2fr
+    1fr
+    1fr
+    1.2fr
+    170px;
+
+    align-items:center;
+
+    padding:22px 30px;
+
+    background:#11161D;
+
+    color:#8E97A8;
+
+    font-size:13px;
+
+    text-transform:uppercase;
+
+    letter-spacing:.08em;
+
+    font-weight:600;
+
+}
+
+/* ===========================
+ROWS
+=========================== */
+
+.table-row{
+
+    display:grid;
+
+    grid-template-columns:
+    2fr
+    1fr
+    1fr
+    1.2fr
+    170px;
+
+    align-items:center;
+
+    padding:24px 30px;
+
+    border-top:1px solid rgba(255,255,255,.05);
+
+    transition:.35s;
+
+}
+
+.table-row:hover{
+
+    background:#1A2029;
+
+}
+
+/* ===========================
+LOWEST
+=========================== */
+
+.lowest-price{
+
+    background:
+    linear-gradient(
+        90deg,
+        rgba(34,197,94,.10),
+        transparent
+    );
+
+}
+
+.lowest-price:hover{
+
+    background:
+    linear-gradient(
+        90deg,
+        rgba(34,197,94,.16),
+        rgba(26,32,41,.8)
+    );
+
+}
+
+/* ===========================
+STORE
+=========================== */
+
+.store-name{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:15px;
+
+}
+
+.store-name svg{
+
+    color:#4F8DFF;
+
+}
+
+.store-name h4{
+
+    color:white;
+
+    font-size:18px;
+
+    margin-bottom:5px;
+
+}
+
+.store-name small{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:6px;
+
+    color:#22C55E;
+
+    font-size:13px;
+
+    font-weight:600;
+
+}
+
+/* ===========================
+PRICE
+=========================== */
+
+.store-price{
+
+    color:white;
+
+    font-size:22px;
+
+    font-weight:700;
+
+}
+
+/* ===========================
+UPDATED
+=========================== */
+
+.updated{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:8px;
+
+    color:#A8B1C2;
+
+    font-size:14px;
+
+}
+
+.updated svg{
+
+    color:#4F8DFF;
+
+}
+
+/* ===========================
+OFFER
+=========================== */
+
+.offer{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:8px;
+
+    width:fit-content;
+
+    padding:10px 14px;
+
+    border-radius:40px;
+
+    background:rgba(255,138,61,.10);
+
+    color:#FF8A3D;
+
+    font-size:13px;
+
+    font-weight:600;
+
+}
+
+.offer svg{
+
+    color:#FF8A3D;
+
+}
+
+/* ===========================
+BUTTON
+=========================== */
+
+.visit-btn{
+
+    height:48px;
+
+    border:none;
+
+    border-radius:14px;
+
+    cursor:pointer;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    gap:8px;
+
+    background:#4F8DFF;
+
+    color:white;
+
+    font-weight:600;
+
+    transition:.3s;
+
+}
+
+.visit-btn:hover{
+
+    background:#3B7DFF;
+
+    transform:translateY(-2px);
+
+}
+
+.visit-btn svg{
+
+    transition:.3s;
+
+}
+
+.visit-btn:hover svg{
+
+    transform:translateX(3px);
+
+}
+
+/* ===========================
+RESPONSIVE
+=========================== */
+
+@media(max-width:1000px){
+
+    .table-head{
+
+        display:none;
+
+    }
+
+    .table-row{
+
+        grid-template-columns:1fr;
+
+        gap:18px;
+
+    }
+
+    .visit-btn{
+
+        width:100%;
+
+    }
+
+}

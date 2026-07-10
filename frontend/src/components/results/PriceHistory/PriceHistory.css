@@ -1,0 +1,157 @@
+.price-history-section {
+    margin: 70px 0;
+    padding: 35px;
+    background: #fff;
+    border-radius: 22px;
+    box-shadow: 0 10px 35px rgba(0,0,0,.06);
+}
+
+.price-history-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:20px;
+    flex-wrap:wrap;
+}
+
+.price-history-header h2{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    font-size:2rem;
+    color:#1e293b;
+    margin-bottom:8px;
+}
+
+.price-history-header p{
+    color:#64748b;
+}
+
+.time-filters{
+    display:flex;
+    gap:12px;
+}
+
+.time-filters button{
+    border:none;
+    background:#eef4ff;
+    color:#2563eb;
+    padding:10px 18px;
+    border-radius:30px;
+    cursor:pointer;
+    font-weight:600;
+    transition:.3s;
+}
+
+.time-filters button:hover{
+    background:#dbeafe;
+}
+
+.time-filters .active{
+    background:#2563eb;
+    color:#fff;
+}
+
+.price-stats{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:22px;
+    margin:35px 0;
+}
+
+.stat-card{
+    border-radius:18px;
+    padding:25px;
+    background:#f8fafc;
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+    transition:.3s;
+}
+
+.stat-card:hover{
+    transform:translateY(-5px);
+}
+
+.stat-card svg{
+    color:#2563eb;
+}
+
+.stat-card h3{
+    color:#475569;
+    font-size:1rem;
+}
+
+.stat-card span{
+    font-size:1.8rem;
+    font-weight:700;
+    color:#0f172a;
+}
+
+.graph-placeholder{
+    height:420px;
+    margin:40px 0;
+    border-radius:20px;
+    border:2px dashed #dbeafe;
+    overflow:hidden;
+}
+
+.graph-grid{
+    height:100%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:
+    linear-gradient(#edf2f7 1px, transparent 1px),
+    linear-gradient(90deg,#edf2f7 1px,transparent 1px);
+
+    background-size:40px 40px;
+}
+
+.graph-grid span{
+    font-size:1.2rem;
+    color:#94a3b8;
+    font-weight:600;
+}
+
+.ai-price-tip{
+    background:linear-gradient(135deg,#2563eb,#3b82f6);
+    color:white;
+    padding:25px;
+    border-radius:18px;
+}
+
+.tip-badge{
+    display:inline-block;
+    padding:8px 18px;
+    border-radius:30px;
+    background:rgba(255,255,255,.18);
+    font-weight:600;
+    margin-bottom:15px;
+}
+
+.ai-price-tip p{
+    font-size:1.05rem;
+    line-height:1.8;
+}
+
+.ai-price-tip span{
+    color:#fde047;
+    font-weight:700;
+}
+
+@media(max-width:900px){
+
+.price-stats{
+    grid-template-columns:1fr;
+}
+
+.graph-placeholder{
+    height:300px;
+}
+
+.time-filters{
+    flex-wrap:wrap;
+}
+
+}

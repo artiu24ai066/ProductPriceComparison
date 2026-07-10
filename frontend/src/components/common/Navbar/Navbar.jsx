@@ -1,28 +1,18 @@
-import { useState } from "react";
 import { Link } from "react-router-dom";
 import {
     User,
-    Bell,
-    Heart,
-    History,
     LogOut,
     Search,
-    ChevronDown
 } from "lucide-react";
 
 import "./Navbar.css";
 
 import logo from "../../../assets/logo.png";
 
-
 const Navbar = () => {
 
     // Replace later with Auth Context / Redux
     const isLoggedIn = false;
-
-
-    const [openDropdown, setOpenDropdown] = useState(false);
-
 
     return (
 
@@ -98,80 +88,18 @@ const Navbar = () => {
                         <div className="user-actions">
 
 
-                            <div className="profile-container">
+                            <Link
+                                to="/profile"
+                                className="profile-btn"
+                            >
 
+                                <User size={21} />
 
-                                <button
-                                    className="profile-btn"
-                                    onClick={() =>
-                                        setOpenDropdown(!openDropdown)
-                                    }
-                                >
+                                <span>
+                                    Profile
+                                </span>
 
-                                    <User size={21} />
-
-                                    <span>
-                                        Profile
-                                    </span>
-
-                                    <ChevronDown size={18} />
-
-                                </button>
-
-
-
-                                {
-                                    openDropdown && (
-
-                                        <div className="profile-dropdown">
-
-
-                                            <Link to="/profile">
-
-                                                <User size={18} />
-
-                                                Profile
-
-                                            </Link>
-
-
-
-                                            <Link to="/notifications">
-
-                                                <Bell size={18} />
-
-                                                Notifications
-
-                                            </Link>
-
-
-
-                                            <Link to="/wishlist">
-
-                                                <Heart size={18} />
-
-                                                Wishlist
-
-                                            </Link>
-
-
-
-                                            <Link to="/history">
-
-                                                <History size={18} />
-
-                                                Search History
-
-                                            </Link>
-
-
-                                        </div>
-
-                                    )
-                                }
-
-
-                            </div>
+                            </Link>
 
 
 
@@ -196,6 +124,5 @@ const Navbar = () => {
 
     );
 };
-
 
 export default Navbar;

@@ -6,6 +6,8 @@ import Login from "./pages/auth/Login.jsx";
 import ForgotPassword from "./pages/auth/ForgotPassword.jsx";
 import ResetPassword from "./pages/auth/ResetPassword.jsx";
 
+import SearchResults from "./pages/SearchResults.jsx";
+
 function App() {
   return (
     <BrowserRouter>
@@ -33,6 +35,11 @@ function App() {
       <Route
         path="/reset-password/:token"
         element={<ResetPassword />}
+      />
+
+      <Route
+        path="/search-results/:token"
+        element={<SearchResults />}
       />
     </Routes>
     

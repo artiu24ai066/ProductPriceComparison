@@ -1,0 +1,48 @@
+.results-page{
+
+    width:100%;
+
+    min-height:100vh;
+
+    padding:120px 0 80px;
+
+    background:
+        radial-gradient(circle at top left,
+            rgba(79,140,255,.10),
+            transparent 35%),
+
+        radial-gradient(circle at bottom right,
+            rgba(255,138,61,.08),
+            transparent 35%),
+
+        #09090B;
+
+}
+
+.results-layout{
+
+    width:92%;
+
+    max-width:1400px;
+
+    margin:auto;
+
+    display:flex;
+
+    align-items:flex-start;
+
+    gap:30px;
+
+}
+
+/* ProductGrid already has flex:1 */
+
+@media(max-width:1000px){
+
+    .results-layout{
+
+        flex-direction:column;
+
+    }
+
+}
