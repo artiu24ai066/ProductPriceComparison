@@ -119,9 +119,9 @@ const Trending = () => {
 
             </div>
 
-            <div className="stats">
+            <div className="home-stats">
 
-                <div className="stat-card">
+                <div className="home-stat-card">
 
                     <Search size={34} />
 
@@ -131,7 +131,7 @@ const Trending = () => {
 
                 </div>
 
-                <div className="stat-card">
+                <div className="home-stat-card">
 
                     <Users size={34} />
 

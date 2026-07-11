@@ -1,0 +1,400 @@
+.settings-page{
+
+    display:flex;
+    flex-direction:column;
+    gap:30px;
+
+}
+
+.settings-header h2{
+
+    color:white;
+    font-size:34px;
+    margin-bottom:8px;
+
+}
+
+.settings-header p{
+
+    color:#A7B0BF;
+
+}
+
+/* Cards */
+
+.settings-card{
+
+    background:#151B25;
+
+    border:1px solid rgba(255,255,255,.08);
+
+    border-radius:24px;
+
+    padding:30px;
+
+}
+
+.card-title{
+
+    display:flex;
+    align-items:center;
+    gap:12px;
+
+    margin-bottom:30px;
+
+}
+
+.card-title h3{
+
+    color:white;
+
+}
+
+.card-title svg{
+
+    color:#4F8DFF;
+
+}
+
+/* Preferred Stores */
+
+.store-grid{
+
+    display:grid;
+
+    grid-template-columns:repeat(2,1fr);
+
+    gap:20px;
+
+}
+
+.store-option{
+
+    cursor:pointer;
+
+}
+
+.store-option input{
+
+    display:none;
+
+}
+
+.store-card{
+
+    position:relative;
+
+    height:90px;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    border-radius:20px;
+
+    background:#1C2431;
+
+    border:2px solid transparent;
+
+    transition:.3s;
+
+}
+
+.store-card h4{
+
+    color:white;
+
+    font-size:18px;
+
+    font-weight:600;
+
+}
+
+.store-check{
+
+    position:absolute;
+
+    top:12px;
+
+    right:12px;
+
+    width:24px;
+
+    height:24px;
+
+    border-radius:50%;
+
+    background:#4F8DFF;
+
+    color:white;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    font-size:13px;
+
+    opacity:0;
+
+    transform:scale(.6);
+
+    transition:.3s;
+
+}
+
+.store-option input:checked + .store-card{
+
+    border-color:#4F8DFF;
+
+    background:rgba(79,141,255,.12);
+
+}
+
+.store-option input:checked + .store-card .store-check{
+
+    opacity:1;
+
+    transform:scale(1);
+
+}
+
+.store-card:hover{
+
+    transform:translateY(-5px);
+
+    border-color:#4F8DFF;
+
+}
+
+
+/* Toggles */
+
+.toggle-row{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    padding:18px 0;
+
+    border-top:1px solid rgba(255,255,255,.06);
+
+}
+
+.toggle-row:first-of-type{
+
+    border-top:none;
+
+}
+
+.toggle-row span{
+
+    color:#D5DBE6;
+
+}
+
+/* Switch */
+
+.switch{
+
+    position:relative;
+
+    width:55px;
+
+    height:30px;
+
+}
+
+.switch input{
+
+    display:none;
+
+}
+
+.slider{
+
+    position:absolute;
+
+    inset:0;
+
+    background:#394454;
+
+    border-radius:50px;
+
+    cursor:pointer;
+
+    transition:.3s;
+
+}
+
+.slider::before{
+
+    content:"";
+
+    position:absolute;
+
+    width:22px;
+
+    height:22px;
+
+    background:white;
+
+    border-radius:50%;
+
+    left:4px;
+
+    top:4px;
+
+    transition:.3s;
+
+}
+
+.switch input:checked + .slider{
+
+    background:#4F8DFF;
+
+}
+
+.switch input:checked + .slider::before{
+
+    transform:translateX(25px);
+
+}
+
+/* Danger */
+
+.danger-zone{
+
+    padding:30px;
+
+    border-radius:24px;
+
+    border:1px solid rgba(255,77,79,.25);
+
+    background:rgba(255,77,79,.06);
+
+}
+
+.danger-title{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:12px;
+
+    color:#ff6b6b;
+
+    margin-bottom:15px;
+
+}
+
+.danger-zone p{
+
+    color:#D6DCE7;
+
+    margin-bottom:25px;
+
+}
+
+.danger-buttons{
+
+    display:flex;
+
+    gap:20px;
+
+}
+
+.clear-btn,
+.delete-btn{
+
+    height:52px;
+
+    padding:0 24px;
+
+    border:none;
+
+    border-radius:16px;
+
+    cursor:pointer;
+
+    font-weight:600;
+
+    transition:.3s;
+
+}
+
+.clear-btn{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:10px;
+
+    background:#2A3442;
+
+    color:white;
+
+}
+
+.clear-btn:hover{
+
+    background:#374354;
+
+}
+
+.delete-btn{
+
+    background:#ff4d4f;
+
+    color:white;
+
+}
+
+.delete-btn:hover{
+
+    background:#e53935;
+
+}
+
+@media(max-width:768px){
+
+.store-grid{
+
+    grid-template-columns:1fr;
+
+}
+
+.toggle-row{
+
+    flex-direction:column;
+
+    align-items:flex-start;
+
+    gap:15px;
+
+}
+
+.danger-buttons{
+
+    flex-direction:column;
+
+}
+
+.clear-btn,
+.delete-btn{
+
+    width:100%;
+
+    justify-content:center;
+
+}
+
+}

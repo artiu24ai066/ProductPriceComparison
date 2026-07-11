@@ -1,0 +1,35 @@
+.profile-content{
+
+    flex:1;
+
+}
+
+.content-card{
+
+    padding:35px;
+
+    border-radius:28px;
+
+    background:#141A23;
+
+    border:1px solid rgba(255,255,255,.08);
+
+}
+
+.content-card h2{
+
+    color:white;
+
+    font-size:34px;
+
+    margin-bottom:12px;
+
+}
+
+.content-card p{
+
+    color:#9BA4B5;
+
+    line-height:1.8;
+
+}

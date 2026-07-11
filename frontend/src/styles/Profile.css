@@ -1,0 +1,33 @@
+.profile-dashboard{
+
+    padding:20px 0 80px;
+
+    background:#09090B;
+
+}
+
+.profile-layout{
+
+    width:92%;
+
+    max-width:1400px;
+
+    margin:auto;
+
+    display:flex;
+
+    gap:30px;
+
+    align-items:flex-start;
+
+}
+
+@media(max-width:1000px){
+
+.profile-layout{
+
+    flex-direction:column;
+
+}
+
+}

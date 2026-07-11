@@ -230,7 +230,7 @@
 
 /* STATS */
 
-.stats {
+.home-stats {
 
     display: flex;
 
@@ -242,7 +242,7 @@
 
 }
 
-.stat-card {
+.home-stat-card {
 
     width: 250px;
 
@@ -268,7 +268,7 @@
 
 }
 
-.stat-card svg {
+.home-stat-card svg {
 
     color: #4f8cff;
 
@@ -276,7 +276,7 @@
 
 }
 
-.stat-card h3 {
+.home-stat-card h3 {
 
     font-size: 42px;
 
@@ -284,13 +284,13 @@
 
 }
 
-.stat-card p {
+.home-stat-card p {
 
     color: #9BA4B5;
 
 }
 
-.stat-card:hover {
+.home-stat-card:hover {
 
     transform: translateY(-8px);
 
@@ -340,7 +340,7 @@
 
     }
 
-    .stats {
+    .home-stats {
 
         flex-direction: column;
 
@@ -348,7 +348,7 @@
 
     }
 
-    .stat-card {
+    .home-stat-card {
 
         width: 90%;
 

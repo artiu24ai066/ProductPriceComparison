@@ -7,6 +7,7 @@ import ForgotPassword from "./pages/auth/ForgotPassword.jsx";
 import ResetPassword from "./pages/auth/ResetPassword.jsx";
 
 import SearchResults from "./pages/SearchResults.jsx";
+import Profile from "./pages/Profile.jsx";
 
 function App() {
   return (
@@ -40,6 +41,11 @@ function App() {
       <Route
         path="/search-results/:token"
         element={<SearchResults />}
+      />
+
+      <Route
+        path="/profile"
+        element={<Profile />}
       />
     </Routes>
     

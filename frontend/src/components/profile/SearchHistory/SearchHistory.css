@@ -1,0 +1,228 @@
+.history-section{
+
+    display:flex;
+    flex-direction:column;
+    gap:35px;
+
+}
+
+.history-header{
+
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+
+}
+
+.history-header h2{
+
+    color:white;
+    font-size:32px;
+    margin-bottom:8px;
+
+}
+
+.history-header p{
+
+    color:#A2ABBB;
+
+}
+
+.clear-history-btn{
+
+    display:flex;
+    align-items:center;
+    gap:10px;
+
+    height:50px;
+
+    padding:0 22px;
+
+    border:none;
+
+    border-radius:15px;
+
+    background:#ff4d4f;
+
+    color:white;
+
+    cursor:pointer;
+
+    transition:.3s;
+
+}
+
+.clear-history-btn:hover{
+
+    transform:translateY(-2px);
+
+}
+
+.history-group{
+
+    display:flex;
+    flex-direction:column;
+    gap:18px;
+
+}
+
+.history-day{
+
+    font-size:20px;
+
+    color:#4F8DFF;
+
+    font-weight:700;
+
+    margin-bottom:10px;
+
+}
+
+.history-card{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:20px;
+
+    padding:22px;
+
+    border-radius:22px;
+
+    background:#151B25;
+
+    border:1px solid rgba(255,255,255,.08);
+
+    transition:.35s;
+
+}
+
+.history-card:hover{
+
+    border-color:#4F8DFF;
+
+    transform:translateX(8px);
+
+}
+
+.history-icon{
+
+    width:58px;
+
+    height:58px;
+
+    border-radius:18px;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    background:rgba(79,141,255,.12);
+
+    color:#4F8DFF;
+
+}
+
+.history-info{
+
+    flex:1;
+
+}
+
+.history-info h3{
+
+    color:white;
+
+    margin-bottom:8px;
+
+}
+
+.history-info span{
+
+    color:#9DA8B7;
+
+    font-size:14px;
+
+}
+
+.history-time{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:8px;
+
+    color:#B6BFCE;
+
+}
+
+.history-view{
+
+    width:48px;
+
+    height:48px;
+
+    border:none;
+
+    border-radius:14px;
+
+    background:#4F8DFF;
+
+    color:white;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    cursor:pointer;
+
+    transition:.3s;
+
+}
+
+.history-view:hover{
+
+    transform:scale(1.08);
+
+}
+
+@media(max-width:850px){
+
+.history-card{
+
+    flex-direction:column;
+
+    align-items:flex-start;
+
+}
+
+.history-view{
+
+    width:100%;
+
+}
+
+.history-header{
+
+    flex-direction:column;
+
+    gap:20px;
+
+    align-items:flex-start;
+
+}
+
+.clear-history-btn{
+
+    width:100%;
+    justify-content:center;
+
+}
+
+}

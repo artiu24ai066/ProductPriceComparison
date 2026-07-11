@@ -1,0 +1,198 @@
+.profile-sidebar{
+
+    width:280px;
+
+    position:sticky;
+
+    top:110px;
+
+    align-self:flex-start;
+
+    display:flex;
+
+    flex-direction:column;
+
+    justify-content:space-between;
+
+    height:650px;
+
+    padding:28px;
+
+    border-radius:28px;
+
+    background:
+    linear-gradient(
+    180deg,
+    #151C29,
+    #11161F
+    );
+
+    border:1px solid rgba(255,255,255,.08);
+
+    box-shadow:
+    0 20px 50px rgba(0,0,0,.35);
+
+}
+
+.sidebar-top{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:12px;
+
+}
+
+.sidebar-item{
+
+    width:100%;
+
+    height:60px;
+
+    display:flex;
+
+    align-items:center;
+
+    gap:16px;
+
+    padding:0 22px;
+
+    border:none;
+
+    border-radius:18px;
+
+    background:transparent;
+
+    color:#B5BECE;
+
+    cursor:pointer;
+
+    transition:.35s;
+
+    font-size:15px;
+
+    font-weight:600;
+
+}
+
+.sidebar-item svg{
+
+    color:#7FAFFF;
+
+}
+
+.sidebar-item:hover{
+
+    background:rgba(79,141,255,.12);
+
+    color:white;
+
+    transform:translateX(6px);
+
+}
+
+.sidebar-item.active{
+
+    background:
+    linear-gradient(
+    135deg,
+    rgba(79,141,255,.18),
+    rgba(79,141,255,.10)
+    );
+
+    border:1px solid rgba(79,141,255,.35);
+
+    color:white;
+
+}
+
+.sidebar-item.active svg{
+
+    color:#4F8DFF;
+
+}
+
+.logout-sidebar{
+
+    height:58px;
+
+    border:none;
+
+    border-radius:18px;
+
+    background:
+    linear-gradient(
+    135deg,
+    #ff8a3d,
+    #ff6a00
+    );
+
+    color:white;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    gap:10px;
+
+    cursor:pointer;
+
+    font-weight:600;
+
+    transition:.35s;
+
+}
+
+.logout-sidebar:hover{
+
+    transform:translateY(-3px);
+
+    box-shadow:
+    0 15px 30px rgba(255,138,61,.30);
+
+}
+
+@media(max-width:1000px){
+
+.profile-sidebar{
+
+    width:100%;
+
+    height:auto;
+
+    position:static;
+
+}
+
+}
+
+.profile-right{
+
+    flex:1;
+
+    animation:fade .35s ease;
+
+}
+
+@keyframes fade{
+
+    from{
+
+        opacity:0;
+
+        transform:translateY(12px);
+
+    }
+
+    to{
+
+        opacity:1;
+
+        transform:none;
+
+    }
+
+}
