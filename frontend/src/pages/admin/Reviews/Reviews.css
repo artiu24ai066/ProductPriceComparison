@@ -1,0 +1,253 @@
+.reviews-page {
+
+    width: 100%;
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 28px;
+
+}
+
+
+
+.reviews-header h1 {
+
+    color: white;
+
+    font-size: 34px;
+
+    margin-bottom: 8px;
+
+}
+
+
+
+.reviews-header p {
+
+    color: #9BA4B5;
+
+    font-size: 15px;
+
+}
+
+
+
+
+
+.reviews-table {
+
+    background: #171B22;
+
+    border: 1px solid rgba(255, 255, 255, .08);
+
+    border-radius: 22px;
+
+    padding: 24px;
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 14px;
+
+}
+
+
+
+
+.reviews-head,
+.reviews-row {
+
+
+    display: grid;
+
+    grid-template-columns:
+
+        3fr 1.2fr 1fr 1fr 1.4fr 1fr 60px;
+
+    align-items: center;
+
+    gap: 15px;
+
+}
+
+
+
+
+.reviews-head {
+
+    color: #9BA4B5;
+
+    font-size: 14px;
+
+    padding: 0 12px;
+
+}
+
+
+
+
+.reviews-row {
+
+    background: #1D232D;
+
+    padding: 16px 12px;
+
+    border-radius: 16px;
+
+    color: white;
+
+    transition: .3s;
+
+}
+
+
+
+.reviews-row:hover {
+
+    transform: translateY(-3px);
+
+}
+
+
+
+
+.review-product h4 {
+
+    margin: 0 0 5px;
+
+    color: white;
+
+}
+
+
+
+.review-product p {
+
+    margin: 0;
+
+    font-size: 13px;
+
+    color: #9BA4B5;
+
+}
+
+
+
+
+
+.rating {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 6px;
+
+    color: #FFB800;
+
+    font-weight: 600;
+
+}
+
+
+
+
+
+.sync {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 7px;
+
+    color: #9BA4B5;
+
+    font-size: 14px;
+
+}
+
+
+
+
+.review-status {
+
+    width: max-content;
+
+    padding: 7px 14px;
+
+    border-radius: 20px;
+
+    font-size: 13px;
+
+}
+
+
+
+.synced {
+
+    background: #22C55E20;
+
+    color: #22C55E;
+
+}
+
+
+
+.pending {
+
+    background: #FF8A3D20;
+
+    color: #FF8A3D;
+
+}
+
+
+
+
+
+.review-view {
+
+    width: 40px;
+
+    height: 40px;
+
+    border: none;
+
+    border-radius: 10px;
+
+    background: #262F3B;
+
+    color: white;
+
+    cursor: pointer;
+
+}
+
+
+
+
+
+@media(max-width:900px) {
+
+
+    .reviews-table {
+
+        overflow-x: auto;
+
+    }
+
+
+
+    .reviews-head,
+    .reviews-row {
+
+        min-width: 950px;
+
+    }
+
+
+}

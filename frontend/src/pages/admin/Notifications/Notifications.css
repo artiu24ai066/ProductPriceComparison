@@ -1,0 +1,234 @@
+.notifications-page {
+
+    width: 100%;
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 28px;
+
+}
+
+
+
+.notifications-header {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+}
+
+
+
+.notifications-header h1 {
+
+    color: white;
+
+    font-size: 34px;
+
+    margin-bottom: 8px;
+
+}
+
+
+
+.notifications-header p {
+
+    color: #9BA4B5;
+
+}
+
+
+
+.notifications-header button {
+
+    background: #4F8CFF;
+
+    border: none;
+
+    padding: 12px 20px;
+
+    border-radius: 14px;
+
+    color: white;
+
+    cursor: pointer;
+
+}
+
+
+
+
+
+.notifications-list {
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 16px;
+
+}
+
+
+
+
+.notification-card {
+
+
+    background: #171B22;
+
+    border: 1px solid rgba(255, 255, 255, .08);
+
+    border-radius: 20px;
+
+    padding: 20px;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 18px;
+
+    transition: .3s;
+
+}
+
+
+
+.notification-card:hover {
+
+    transform: translateY(-3px);
+
+}
+
+
+
+
+
+.notification-icon {
+
+
+    width: 55px;
+
+    height: 55px;
+
+    border-radius: 16px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+
+}
+
+
+
+
+.notification-icon.success {
+
+    background: #22C55E20;
+
+    color: #22C55E;
+
+}
+
+
+
+
+.notification-icon.warning {
+
+    background: #FF8A3D20;
+
+    color: #FF8A3D;
+
+}
+
+
+
+
+.notification-icon.error {
+
+    background: #EF444420;
+
+    color: #EF4444;
+
+}
+
+
+
+
+
+.notification-content {
+
+    flex: 1;
+
+}
+
+
+
+.notification-content h3 {
+
+    color: white;
+
+    font-size: 17px;
+
+    margin: 0 0 6px;
+
+}
+
+
+
+.notification-content p {
+
+    color: #9BA4B5;
+
+    margin: 0 0 8px;
+
+}
+
+
+
+.notification-content span {
+
+    color: #6B7280;
+
+    font-size: 13px;
+
+}
+
+
+
+
+
+.refresh-icon {
+
+    color: #9BA4B5;
+
+    cursor: pointer;
+
+}
+
+
+
+@media(max-width:700px) {
+
+
+    .notifications-header {
+
+        flex-direction: column;
+
+        align-items: flex-start;
+
+        gap: 15px;
+
+    }
+
+
+}

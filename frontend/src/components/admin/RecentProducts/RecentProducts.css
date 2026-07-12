@@ -1,0 +1,197 @@
+.recent-products {
+
+    width: 100%;
+
+    background: #171B22;
+
+    border: 1px solid rgba(255, 255, 255, .08);
+
+    border-radius: 22px;
+
+    padding: 24px;
+
+}
+
+.recent-products-header {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    margin-bottom: 24px;
+
+    gap: 16px;
+
+}
+
+.recent-products-header h2 {
+
+    color: #fff;
+
+    margin-bottom: 6px;
+
+}
+
+.recent-products-header p {
+
+    color: #9BA4B5;
+
+    font-size: 14px;
+
+}
+
+.recent-products-header button {
+
+    border: none;
+
+    padding: 10px 18px;
+
+    border-radius: 12px;
+
+    background: #4F8CFF;
+
+    color: #fff;
+
+    cursor: pointer;
+
+}
+
+.products-table {
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 14px;
+
+}
+
+.table-head {
+
+    display: grid;
+
+    grid-template-columns: 3fr 1.3fr 1.3fr 1fr 60px;
+
+    color: #9BA4B5;
+
+    font-size: 14px;
+
+    padding: 0 12px;
+
+}
+
+.table-row {
+
+    display: grid;
+
+    grid-template-columns: 3fr 1.3fr 1.3fr 1fr 60px;
+
+    align-items: center;
+
+    gap: 10px;
+
+    padding: 16px 12px;
+
+    background: #1D232D;
+
+    border-radius: 16px;
+
+    transition: .3s;
+
+}
+
+.table-row:hover {
+
+    transform: translateY(-2px);
+
+}
+
+.product-info {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 14px;
+
+    min-width: 0;
+
+}
+
+.product-info img {
+
+    width: 56px;
+
+    height: 56px;
+
+    border-radius: 12px;
+
+    object-fit: cover;
+
+    flex-shrink: 0;
+
+}
+
+.product-info h4 {
+
+    color: #fff;
+
+    margin: 0 0 5px;
+
+}
+
+.product-info p {
+
+    color: #9BA4B5;
+
+    font-size: 13px;
+
+    margin: 0;
+
+}
+
+.price {
+
+    color: #22C55E;
+
+    font-weight: 600;
+
+}
+
+.view-btn {
+
+    width: 40px;
+
+    height: 40px;
+
+    border: none;
+
+    border-radius: 10px;
+
+    background: #262F3B;
+
+    color: white;
+
+    cursor: pointer;
+
+}
+
+@media(max-width:1000px) {
+
+    .products-table {
+
+        overflow-x: auto;
+
+    }
+
+    .table-head,
+
+    .table-row {
+
+        min-width: 850px;
+
+    }
+
+}

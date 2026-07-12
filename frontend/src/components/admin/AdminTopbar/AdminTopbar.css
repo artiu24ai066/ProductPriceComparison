@@ -1,0 +1,257 @@
+.admin-topbar {
+
+    height: 80px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 20px;
+
+    padding: 0 28px;
+
+    background: #11161D;
+
+    border-bottom: 1px solid rgba(255, 255, 255, .08);
+
+    position: sticky;
+
+    top: 0;
+
+    z-index: 100;
+
+}
+
+/* Menu Button */
+
+.menu-btn {
+
+    display: none;
+
+    width: 46px;
+
+    height: 46px;
+
+    border: none;
+
+    border-radius: 12px;
+
+    cursor: pointer;
+
+    background: #1A212B;
+
+    color: white;
+
+}
+
+/* Search */
+
+.topbar-search {
+
+    flex: 1;
+
+    max-width: 500px;
+
+    height: 50px;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 12px;
+
+    padding: 0 18px;
+
+    border-radius: 14px;
+
+    background: #1A212B;
+
+    color: #9BA4B5;
+
+}
+
+.topbar-search input {
+
+    flex: 1;
+
+    border: none;
+
+    outline: none;
+
+    background: transparent;
+
+    color: white;
+
+    font-size: 15px;
+
+}
+
+.topbar-search input::placeholder {
+
+    color: #9BA4B5;
+
+}
+
+/* Right Section */
+
+.topbar-right {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 18px;
+
+}
+
+/* Notification */
+
+.notification-btn {
+
+    width: 48px;
+
+    height: 48px;
+
+    border: none;
+
+    border-radius: 14px;
+
+    cursor: pointer;
+
+    background: #1A212B;
+
+    color: white;
+
+    position: relative;
+
+    transition: .3s;
+
+}
+
+.notification-btn:hover {
+
+    background: #222B37;
+
+}
+
+.notification-badge {
+
+    position: absolute;
+
+    top: 8px;
+
+    right: 8px;
+
+    width: 18px;
+
+    height: 18px;
+
+    border-radius: 50%;
+
+    background: #FF8A3D;
+
+    color: white;
+
+    font-size: 11px;
+
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
+
+}
+
+/* Profile */
+
+.admin-profile {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 12px;
+
+    padding: 8px 14px;
+
+    border-radius: 14px;
+
+    background: #1A212B;
+
+    cursor: pointer;
+
+}
+
+.admin-profile img {
+
+    width: 42px;
+
+    height: 42px;
+
+    border-radius: 50%;
+
+    object-fit: cover;
+
+}
+
+.admin-info h4 {
+
+    margin: 0;
+
+    color: white;
+
+    font-size: 15px;
+
+}
+
+.admin-info p {
+
+    margin: 2px 0 0;
+
+    color: #9BA4B5;
+
+    font-size: 13px;
+
+}
+
+/* Tablet */
+
+@media(max-width:900px) {
+
+    .admin-info {
+
+        display: none;
+
+    }
+
+}
+
+/* Mobile */
+
+@media(max-width:768px) {
+
+    .menu-btn {
+
+        display: flex;
+
+        justify-content: center;
+
+        align-items: center;
+
+    }
+
+    .topbar-search {
+
+        max-width: none;
+
+    }
+
+    .admin-topbar {
+
+        padding: 0 16px;
+
+    }
+
+}
