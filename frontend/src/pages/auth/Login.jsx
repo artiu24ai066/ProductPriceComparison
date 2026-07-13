@@ -40,7 +40,7 @@ const Login = () => {
         try {
             setLoading(true);
 
-            const response = await api.post("/auth/login", {
+            const response = await api.post("/users/login", {
                 email: formData.email,
                 password: formData.password,
             });

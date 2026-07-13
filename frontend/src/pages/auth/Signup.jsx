@@ -15,7 +15,7 @@ const Signup = () => {
     const [loading, setLoading] = useState(false);
 
     const [formData, setFormData] = useState({
-        fullName: "",
+        fullname: "",
         email: "",
         password: "",
         confirmPassword: "",
@@ -31,9 +31,9 @@ const Signup = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        const { fullName, email, password, confirmPassword } = formData;
+        const { fullname, email, password, confirmPassword } = formData;
 
-        if (!fullName || !email || !password || !confirmPassword) {
+        if (!fullname || !email || !password || !confirmPassword) {
             alert("Please fill in all fields.");
             return;
         }
@@ -46,8 +46,8 @@ const Signup = () => {
         try {
             setLoading(true);
 
-            const response = await api.post("/auth/register", {
-                fullName,
+            const response = await api.post("/users/register", {
+                fullname,
                 email,
                 password,
             });
@@ -75,9 +75,9 @@ const Signup = () => {
 
                 <AuthInput
                     icon={User}
-                    name="fullName"
+                    name="fullname"
                     placeholder="Full Name"
-                    value={formData.fullName}
+                    value={formData.fullname}
                     onChange={handleChange}
                 />
 
