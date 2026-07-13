@@ -87,26 +87,26 @@ const Stores = () => {
     };
 
     return (
-        <div className="stores-page">
-            <div className="stores-header">
+        <div className="stores-wrapper">
+            <div className="stores-heading">
                 <div>
                     <h1>Connected Stores</h1>
                     <p>Monitor and manage all price comparison sources.</p>
                 </div>
 
-                <button className="add-store">
+                <button className="stores-add-btn">
                     <Plus size={18} />
                     Add Store
                 </button>
             </div>
 
-            <div className="stores-toolbar">
-                <div className="search-box">
+            <div className="stores-actions">
+                <div className="stores-search">
                     <Search size={18} />
                     <input placeholder="Search stores..." />
                 </div>
 
-                <select>
+                <select className="stores-filter">
                     <option>All Status</option>
                     <option>Online</option>
                     <option>Delayed</option>
@@ -114,25 +114,24 @@ const Stores = () => {
                 </select>
             </div>
 
-            <div className="stores-grid">
+            <div className="stores-list">
                 {stores.map((store) => (
-                    <div className="store-card" key={store.id}>
-                        <div className="store-top">
+                    <div className="store-box" key={store.id}>
+                        <div className="store-header">
                             <img src={store.logo} alt={store.name} />
 
                             <div>
                                 <h3>{store.name}</h3>
 
                                 <div
-                                    className={`status ${store.status.toLowerCase()
-                                        }`}
+                                    className={`store-status ${store.status.toLowerCase()}`}
                                 >
                                     {getStatus(store.status)}
                                 </div>
                             </div>
                         </div>
 
-                        <div className="stats-grid">
+                        <div className="store-info-grid">
                             <div>
                                 <span>Products</span>
                                 <strong>{store.products}</strong>
@@ -154,13 +153,13 @@ const Stores = () => {
                             </div>
                         </div>
 
-                        <div className="sync-progress">
-                            <div className="progress-head">
+                        <div className="store-health">
+                            <div className="store-health-head">
                                 <span>Sync Health</span>
                                 <span>{store.progress}%</span>
                             </div>
 
-                            <div className="progress">
+                            <div className="store-progress">
                                 <div
                                     style={{
                                         width: `${store.progress}%`,
@@ -169,13 +168,13 @@ const Stores = () => {
                             </div>
                         </div>
 
-                        <div className="store-footer">
+                        <div className="store-actions">
                             <button>
                                 <RefreshCcw size={17} />
                                 Sync Now
                             </button>
 
-                            <button className="details">
+                            <button className="store-details-btn">
                                 <ExternalLink size={17} />
                                 Details
                             </button>

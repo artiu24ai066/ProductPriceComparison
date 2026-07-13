@@ -67,13 +67,13 @@ const menuItems = [
   },
 ];
 
-const AdminSidebar = () => {
+const AdminSidebar = ({ sidebarOpen, setSidebarOpen }) => {
   return (
-    <aside className="admin-sidebar">
+    <aside className={`admin-sidebar ${sidebarOpen ? "sidebaropen" : ""}`}>
 
       <div className="sidebar-logo">
         <h2>
-          PPC<span> Admin</span>
+          Price<span>Wise</span>
         </h2>
       </div>
 
@@ -82,6 +82,7 @@ const AdminSidebar = () => {
           <NavLink
             key={item.name}
             to={item.path}
+            onClick={() => setSidebarOpen(false)}
             className={({ isActive }) =>
               isActive ? "sidebar-link active" : "sidebar-link"
             }

@@ -16,14 +16,14 @@ const searches = [
 
 const Trending = () => {
     return (
-        <section className="trending-section">
+        <section className="trending-searches-section">
 
-            <div className="glow glow-left"></div>
-            <div className="glow glow-right"></div>
+            <div className="trending-searches-glow trending-searches-glow-left"></div>
+            <div className="trending-searches-glow trending-searches-glow-right"></div>
 
-            <div className="trending-header">
+            <div className="trending-searches-header">
 
-                <span className="live-tag">
+                <span className="trending-searches-live-tag">
                     LIVE TRENDING
                 </span>
 
@@ -37,13 +37,13 @@ const Trending = () => {
 
             {/* Row 1 */}
 
-            <div className="marquee">
+            <div className="trending-searches-marquee">
 
-                <div className="track slow">
+                <div className="trending-searches-track trending-searches-slow">
 
                     {[...searches, ...searches].map((item, index) => (
 
-                        <div className="trend-card" key={index}>
+                        <div className="trending-searches-card" key={index}>
 
                             <TrendingUp size={18} />
 
@@ -65,13 +65,13 @@ const Trending = () => {
 
             {/* Row 2 */}
 
-            <div className="marquee">
+            <div className="trending-searches-marquee">
 
-                <div className="track medium">
+                <div className="trending-searches-track trending-searches-medium">
 
                     {[...searches, ...searches].map((item, index) => (
 
-                        <div className="trend-card" key={index}>
+                        <div className="trending-searches-card" key={index}>
 
                             <TrendingUp size={18} />
 
@@ -93,13 +93,13 @@ const Trending = () => {
 
             {/* Row 3 */}
 
-            <div className="marquee">
+            <div className="trending-searches-marquee">
 
-                <div className="track fast">
+                <div className="trending-searches-track trending-searches-fast">
 
                     {[...searches, ...searches].map((item, index) => (
 
-                        <div className="trend-card" key={index}>
+                        <div className="trending-searches-card" key={index}>
 
                             <TrendingUp size={18} />
 
@@ -119,9 +119,9 @@ const Trending = () => {
 
             </div>
 
-            <div className="home-stats">
+            <div className="trending-searches-stats">
 
-                <div className="home-stat-card">
+                <div className="trending-searches-stat-card">
 
                     <Search size={34} />
 
@@ -131,7 +131,7 @@ const Trending = () => {
 
                 </div>
 
-                <div className="home-stat-card">
+                <div className="trending-searches-stat-card">
 
                     <Users size={34} />
 

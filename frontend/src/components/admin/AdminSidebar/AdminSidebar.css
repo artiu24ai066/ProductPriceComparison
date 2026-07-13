@@ -210,3 +210,30 @@ RESPONSIVE
   }
 
 }
+
+
+/* Mobile Sidebar */
+
+@media (max-width:768px) {
+
+  .admin-sidebar {
+
+    position: fixed;
+    top: 0;
+    left: -290px;
+
+    width: 280px;
+    height: 100vh;
+
+    z-index: 999;
+
+    transition: .35s ease;
+  }
+
+  .admin-sidebar.sidebaropen {
+
+    left: 0;
+
+  }
+
+}

@@ -6,11 +6,11 @@ import {
   ChevronDown,
 } from "lucide-react";
 
-const AdminTopbar = () => {
+const AdminTopbar = ({ setSidebarOpen }) => {
   return (
     <header className="admin-topbar">
 
-      <button className="menu-btn">
+      <button className="menu-btn" onClick={() => setSidebarOpen((prev) => !prev)}>
         <Menu size={22} />
       </button>
 

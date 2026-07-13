@@ -1,26 +1,26 @@
-.stores-page {
+.stores-wrapper {
     display: flex;
     flex-direction: column;
     gap: 30px;
 }
 
-.stores-header {
+.stores-heading {
     display: flex;
     justify-content: space-between;
     align-items: center;
 }
 
-.stores-header h1 {
+.stores-heading h1 {
     font-size: 34px;
     color: white;
     margin-bottom: 8px;
 }
 
-.stores-header p {
+.stores-heading p {
     color: #95A3B8;
 }
 
-.add-store {
+.stores-add-btn {
     display: flex;
     align-items: center;
     gap: 10px;
@@ -34,18 +34,18 @@
     transition: .3s;
 }
 
-.add-store:hover {
+.stores-add-btn:hover {
     transform: translateY(-3px);
     box-shadow: 0 10px 25px rgba(79, 140, 255, .35);
 }
 
-.stores-toolbar {
+.stores-actions {
     display: flex;
     justify-content: space-between;
     gap: 20px;
 }
 
-.search-box {
+.stores-search {
     flex: 1;
     display: flex;
     align-items: center;
@@ -56,7 +56,7 @@
     border: 1px solid rgba(255, 255, 255, .08);
 }
 
-.search-box input {
+.stores-search input {
     flex: 1;
     background: none;
     border: none;
@@ -65,7 +65,7 @@
     font-size: 15px;
 }
 
-.stores-toolbar select {
+.stores-filter {
     padding: 14px 18px;
     background: #171B22;
     color: white;
@@ -73,13 +73,13 @@
     border: 1px solid rgba(255, 255, 255, .08);
 }
 
-.stores-grid {
+.stores-list {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
     gap: 25px;
 }
 
-.store-card {
+.store-box {
     background: #171B22;
     border-radius: 22px;
     padding: 24px;
@@ -92,29 +92,27 @@
     overflow: hidden;
 }
 
-.store-card::before {
+.store-box::before {
     content: "";
     position: absolute;
-    top: 0;
-    left: 0;
+    inset: 0 0 auto 0;
     height: 4px;
-    width: 100%;
     background: linear-gradient(90deg, #4F8CFF, #8A5CFF);
 }
 
-.store-card:hover {
+.store-box:hover {
     transform: translateY(-8px);
     border-color: #4F8CFF;
     box-shadow: 0 18px 35px rgba(79, 140, 255, .15);
 }
 
-.store-top {
+.store-header {
     display: flex;
     align-items: center;
     gap: 18px;
 }
 
-.store-top img {
+.store-header img {
     width: 64px;
     height: 64px;
     padding: 10px;
@@ -123,12 +121,12 @@
     object-fit: contain;
 }
 
-.store-top h3 {
+.store-header h3 {
     color: white;
     margin-bottom: 8px;
 }
 
-.status {
+.store-status {
     display: flex;
     align-items: center;
     gap: 6px;
@@ -148,31 +146,31 @@
     color: #EF4444;
 }
 
-.stats-grid {
+.store-info-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 18px;
 }
 
-.stats-grid div {
+.store-info-grid div {
     background: #1D232D;
     padding: 18px;
     border-radius: 16px;
 }
 
-.stats-grid span {
+.store-info-grid span {
     display: block;
     color: #94A3B8;
     font-size: 13px;
     margin-bottom: 6px;
 }
 
-.stats-grid strong {
+.store-info-grid strong {
     color: white;
     font-size: 18px;
 }
 
-.progress-head {
+.store-health-head {
     display: flex;
     justify-content: space-between;
     margin-bottom: 10px;
@@ -180,25 +178,25 @@
     font-size: 14px;
 }
 
-.progress {
+.store-progress {
     height: 8px;
     background: #2A313C;
     border-radius: 30px;
     overflow: hidden;
 }
 
-.progress div {
+.store-progress div {
     height: 100%;
     background: linear-gradient(90deg, #4F8CFF, #8A5CFF);
     border-radius: 30px;
 }
 
-.store-footer {
+.store-actions {
     display: flex;
     gap: 15px;
 }
 
-.store-footer button {
+.store-actions button {
     flex: 1;
     height: 46px;
     border: none;
@@ -213,27 +211,27 @@
     transition: .3s;
 }
 
-.details {
+.store-details-btn {
     background: #4F8CFF !important;
 }
 
-.store-footer button:hover {
+.store-actions button:hover {
     transform: translateY(-2px);
 }
 
-@media(max-width:750px) {
+@media (max-width:750px) {
 
-    .stores-toolbar {
+    .stores-actions {
         flex-direction: column;
     }
 
-    .stores-header {
+    .stores-heading {
         flex-direction: column;
         align-items: flex-start;
         gap: 18px;
     }
 
-    .stats-grid {
+    .store-info-grid {
         grid-template-columns: 1fr;
     }
 

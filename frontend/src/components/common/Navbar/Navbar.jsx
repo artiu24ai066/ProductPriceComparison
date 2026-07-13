@@ -12,7 +12,7 @@ import logo from "../../../assets/logo.png";
 const Navbar = () => {
 
     // Replace later with Auth Context / Redux
-    const isLoggedIn = false;
+    const isLoggedIn = true;
 
     return (
 

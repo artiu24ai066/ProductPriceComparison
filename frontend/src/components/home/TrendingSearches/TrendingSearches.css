@@ -1,4 +1,4 @@
-.trending-section {
+.trending-searches-section {
 
     position: relative;
 
@@ -23,7 +23,7 @@
 
 /* GLOW */
 
-.glow {
+.trending-searches-glow {
 
     position: absolute;
 
@@ -35,7 +35,7 @@
 
 }
 
-.glow-left {
+.trending-searches-glow-left {
 
     width: 420px;
 
@@ -49,7 +49,7 @@
 
 }
 
-.glow-right {
+.trending-searches-glow-right {
 
     width: 350px;
 
@@ -65,7 +65,7 @@
 
 /* HEADER */
 
-.trending-header {
+.trending-searches-header {
 
     text-align: center;
 
@@ -77,7 +77,7 @@
 
 }
 
-.live-tag {
+.trending-searches-live-tag {
 
     display: inline-block;
 
@@ -97,7 +97,7 @@
 
 }
 
-.trending-header h2 {
+.trending-searches-header h2 {
 
     font-size: 54px;
 
@@ -113,7 +113,7 @@
 
 }
 
-.trending-header p {
+.trending-searches-header p {
 
     color: #b7becb;
 
@@ -123,7 +123,7 @@
 
 /* MARQUEE */
 
-.marquee {
+.trending-searches-marquee {
 
     overflow: hidden;
 
@@ -131,7 +131,7 @@
 
 }
 
-.track {
+.trending-searches-track {
 
     display: flex;
 
@@ -141,28 +141,27 @@
 
 }
 
-.slow {
+.trending-searches-slow {
 
     animation: leftScroll 50s linear infinite;
 
 }
 
-.medium {
+.trending-searches-medium {
 
     animation: rightScroll 75s linear infinite;
 
 }
 
-.fast {
+.trending-searches-fast {
 
     animation: leftScroll 45s linear infinite;
 
 }
 
-
 /* CARD */
 
-.trend-card {
+.trending-searches-card {
 
     min-width: 270px;
 
@@ -188,13 +187,13 @@
 
 }
 
-.trend-card svg {
+.trending-searches-card svg {
 
     color: #ff8a3d;
 
 }
 
-.trend-card h4 {
+.trending-searches-card h4 {
 
     margin-bottom: 5px;
 
@@ -202,7 +201,7 @@
 
 }
 
-.trend-card span {
+.trending-searches-card span {
 
     color: #9BA4B5;
 
@@ -210,7 +209,7 @@
 
 }
 
-.trend-card:hover {
+.trending-searches-card:hover {
 
     transform: translateY(-6px);
 
@@ -222,7 +221,7 @@
 
 }
 
-.marquee:hover .track {
+.trending-searches-marquee:hover .trending-searches-track {
 
     animation-play-state: paused;
 
@@ -230,7 +229,7 @@
 
 /* STATS */
 
-.home-stats {
+.trending-searches-stats {
 
     display: flex;
 
@@ -242,7 +241,7 @@
 
 }
 
-.home-stat-card {
+.trending-searches-stat-card {
 
     width: 250px;
 
@@ -268,7 +267,7 @@
 
 }
 
-.home-stat-card svg {
+.trending-searches-stat-card svg {
 
     color: #4f8cff;
 
@@ -276,7 +275,7 @@
 
 }
 
-.home-stat-card h3 {
+.trending-searches-stat-card h3 {
 
     font-size: 42px;
 
@@ -284,13 +283,13 @@
 
 }
 
-.home-stat-card p {
+.trending-searches-stat-card p {
 
     color: #9BA4B5;
 
 }
 
-.home-stat-card:hover {
+.trending-searches-stat-card:hover {
 
     transform: translateY(-8px);
 
@@ -332,15 +331,17 @@
 
 }
 
+/* RESPONSIVE */
+
 @media(max-width:900px) {
 
-    .trending-header h2 {
+    .trending-searches-header h2 {
 
         font-size: 38px;
 
     }
 
-    .home-stats {
+    .trending-searches-stats {
 
         flex-direction: column;
 
@@ -348,7 +349,7 @@
 
     }
 
-    .home-stat-card {
+    .trending-searches-stat-card {
 
         width: 90%;
 
