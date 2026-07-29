@@ -1,83 +1,52 @@
-/**
- * Reliance Digital search-results page selectors.
- *
- * Reliance Digital uses a React-based SPA. The class names are more stable
- * than Flipkart's but the site relies heavily on JS rendering. We target
- * BEM-style class prefixes and data attributes where possible.
- */
 export const RELIANCE_SELECTORS = {
 
     // ── Product card container ────────────────────────────────────────────
+    // From live HTML: <div class="product-card">
     product: [
-        ".product-card",                // primary
-        ".fy__product-card",            // alternate namespace
-        "div[class*='product-card']",   // any variant
-        "li.product",                   // list view
-        "div[class*='plp-card']",       // PLP (product listing page) card
+        ".product-card",
+        "div[class*='product-card']",
+        "li.product",
     ],
 
     // ── Product title ─────────────────────────────────────────────────────
+    // From live HTML: <div class="product-card-title"> Apple iPhone 17 Pro... </div>
     title: [
-        ".product-card-title",
+        "div.product-card-title",
         ".fy__product-title",
         "p.product-title",
         "h3.product-title",
-        "p[class*='title']",
-        "h3[class*='title']",
-        "a[class*='title']",
-        ".details-container .title",
     ],
 
     // ── Price ─────────────────────────────────────────────────────────────
+    // From live HTML: <div class="price"> ₹1,30,990.00 </div>
+    // Must be scoped inside price-container to avoid matching mrp-amount
     price: [
-        ".price",
-        ".fy__price",
-        "span.price",
-        "div[class*='price'] span",
-        "span[class*='price']",
+        "div.price-container div.price",
+        "div.price",
         "span[class*='final-price']",
         "span[class*='selling-price']",
-        ".price-block .sp",
     ],
 
     // ── Product image ─────────────────────────────────────────────────────
+    // From live HTML: <img class="fy__img" src="https://cdn.jiostore.online/...">
     image: [
+        "img.fy__img",
         ".product-card-image img",
-        ".fy__img",                          // known class
         "img[class*='product-image']",
-        "img[class*='fy__']",
-        "div[class*='image-container'] img",
-        "figure img",
-        "img[loading='lazy']",               // lazy-loaded images
-        "img[data-src]",                     // lazy-load attribute
-        "img",
+        "picture img",
     ],
 
     // ── Product link ──────────────────────────────────────────────────────
+    // From live HTML: <a class="product-card-image" href="/product/...">
     link: [
-        "a.product-card-image",             // image-anchor wraps product link
+        "a.product-card-image",
         "a.details-container",
-        ".product-card-title a",
-        "a[href*='/p/']",
-        "a[href*='/buy/']",
-        "a[class*='product']",
-        "a",                                // broadest fallback within card
+        "a[href*='/product/']",
     ],
 
     // ── Star rating ────────────────────────────────────────────────────────
-    rating: [
-        ".rating",
-        ".fy__rating",
-        "span[class*='rating']",
-        "div[class*='rating']",
-        "span.rating-number",
-        "div.rating-count",
-    ],
+    // Reliance uses SVG stars only — no numeric rating text on listing cards.
+    // Leaving empty array so scraper returns "" for rating (correct behaviour).
+    rating: [],
 
-    // ── Review count (bonus) ──────────────────────────────────────────────
-    reviewCount: [
-        ".review-count",
-        "span[class*='review']",
-        "span[class*='count']",
-    ],
 };

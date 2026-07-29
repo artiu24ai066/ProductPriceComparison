@@ -59,8 +59,11 @@ export const scrapeFlipkart = async (page, searchQuery) => {
                 store: "Flipkart",
 
                 title: cleanText(
-                    (await titleElement?.innerText()) || ""
+                    (await titleElement?.innerText()) ||
+                    (await imageElement?.getAttribute("alt")) ||
+                    ""
                 ),
+
 
                 price,
 
