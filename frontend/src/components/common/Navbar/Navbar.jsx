@@ -1,18 +1,76 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import {
     User,
     LogOut,
     Search,
 } from "lucide-react";
 
+import { useState, useEffect } from "react";
 import "./Navbar.css";
 
 import logo from "../../../assets/logo.png";
+import { logoutSuccess } from "../../../features/auth/authSlice";
+import useAppSelector from "../../../hooks/useAppSelector";
+import useAppDispatch from "../../../hooks/useAppDispatch";
 
+import api from "../../../api/axios";
 const Navbar = () => {
+    const navigate = useNavigate();
+    const dispatch = useAppDispatch();
+    const [searchParams] = useSearchParams();
+    const [query, setQuery] = useState("");
 
-    // Replace later with Auth Context / Redux
-    const isLoggedIn = false;
+    const {
+        user,
+        isAuthenticated,
+    } = useAppSelector((state) => state.auth);
+
+    useEffect(() => {
+        setQuery(searchParams.get("q") || "");
+    }, [searchParams]);
+
+    const handleLogout = async () => {
+        try {
+            await api.post("/users/logout");
+
+            localStorage.removeItem("accessToken");
+            localStorage.removeItem("user");
+
+            sessionStorage.removeItem("accessToken");
+            sessionStorage.removeItem("user");
+
+            dispatch(logoutSuccess());
+
+            navigate("/login", { replace: true });
+
+        } catch (error) {
+            console.error("Logout failed:", error);
+
+            // Even if the backend request fails,
+            // clear the frontend auth state.
+            localStorage.removeItem("accessToken");
+            localStorage.removeItem("user");
+
+            sessionStorage.removeItem("accessToken");
+            sessionStorage.removeItem("user");
+
+            dispatch(logoutSuccess());
+
+            navigate("/login", { replace: true });
+        }
+    };
+
+    const handleSearch = () => {
+        const trimmedQuery = query.trim();
+
+        if (!trimmedQuery) return;
+
+        const currentQuery = (searchParams.get("q") || "").trim();
+
+        if (trimmedQuery.toLowerCase() === currentQuery.toLowerCase()) return;
+        
+        navigate(`/search-results?q=${encodeURIComponent(trimmedQuery)}`);
+    };
 
     return (
 
@@ -42,11 +100,18 @@ const Navbar = () => {
 
                 <div className="nav-search">
 
-                    <Search size={20} />
+                    <Search size={20} onClick={handleSearch} style={{ cursor: "pointer" }} />
 
                     <input
                         type="text"
                         placeholder="Search products, keywords..."
+                        value={query}
+                        onChange={(e) => setQuery(e.target.value)}
+                        onKeyDown={(e) => {
+                            if (e.key === "Enter") {
+                                handleSearch();
+                            }
+                        }}
                     />
 
                 </div>
@@ -54,7 +119,7 @@ const Navbar = () => {
 
 
                 {
-                    !isLoggedIn ? (
+                    !isAuthenticated ? (
 
                         /* GUEST NAVBAR */
 
@@ -96,14 +161,14 @@ const Navbar = () => {
                                 <User size={21} />
 
                                 <span>
-                                    Profile
+                                        {user?.fullname?.split(" ")[0]}
                                 </span>
 
                             </Link>
 
 
 
-                            <button className="logout-btn">
+                            <button className="logout-btn" onClick={handleLogout}>
 
                                 <LogOut size={18} />
 

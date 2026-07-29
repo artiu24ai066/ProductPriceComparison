@@ -1,5 +1,8 @@
 import { Routes, Route, Navigate, BrowserRouter } from "react-router-dom";
 
+import ProtectedRoute from "./components/auth/ProtectedRoute.jsx";
+import PublicRoute from "./components/auth/PublicRoute.jsx";
+
 import Home from "./pages/Home.jsx";
 import Signup from "./pages/auth/Signup.jsx";
 import Login from "./pages/auth/Login.jsx";
@@ -22,6 +25,7 @@ import Analytics from "./pages/admin/Analytics/Analytics.jsx";
 import Notifications from "./pages/admin/Notifications/Notifications.jsx";
 import Settings from "./pages/admin/Settings/Settings.jsx";
 
+
 function App() {
   return (
     <BrowserRouter>
@@ -33,12 +37,20 @@ function App() {
 
       <Route 
         path="/signup" 
-        element={<Signup />} 
+        element={
+            <PublicRoute>
+              <Signup />
+            </PublicRoute>
+          } 
       />
 
       <Route 
         path="/login" 
-        element={<Login />} 
+        element={
+            <PublicRoute>
+              <Login />
+            </PublicRoute>
+          } 
       />
 
       <Route
@@ -52,13 +64,17 @@ function App() {
       />
 
       <Route
-        path="/search-results/:token"
+        path="/search-results"
         element={<SearchResults />}
       />
 
       <Route
         path="/profile"
-        element={<Profile />}
+        element={
+            <ProtectedRoute>
+              <Profile />
+            </ProtectedRoute>
+          }
       />
 
         <Route path="/admin" element={<AdminLayout />}>

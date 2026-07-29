@@ -1,6 +1,6 @@
 import "./SearchHeader.css";
 
-const SearchHeader = () => {
+const SearchHeader = ({ query, totalProducts }) => {
     return (
 
         <section className="search-header">
@@ -12,7 +12,7 @@ const SearchHeader = () => {
                 </span>
 
                 <h1>
-                    Results for <span>"iPhone 16"</span>
+                    Results for <span>"{query}"</span>
                 </h1>
 
                 <p>
@@ -26,7 +26,7 @@ const SearchHeader = () => {
 
                 <div className="header-stat">
 
-                    <h2>18</h2>
+                    <h2>{totalProducts}</h2>
 
                     <span>Products</span>
 

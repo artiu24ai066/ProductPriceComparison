@@ -1,19 +1,23 @@
 import { useState } from "react";
-import "./SearchBar.css";
+import { useNavigate } from "react-router-dom";
 import { FiSearch } from "react-icons/fi";
+
 import Button from "../Button/Button";
+
+import "./SearchBar.css";
 
 const SearchBar = ({
     placeholder = "Search for products, brands & more...",
-    onSearch,
-}) => {
+    }) => {
 
     const [query, setQuery] = useState("");
 
+    const navigate = useNavigate();
+
     const handleSearch = () => {
-        if (onSearch) {
-            onSearch(query);
-        }
+        const trimmedQuery = query.trim();
+        if (!trimmedQuery) return;
+        navigate(`/search-results?q=${encodeURIComponent(trimmedQuery)}`);
     };
 
     return (
@@ -35,9 +39,14 @@ const SearchBar = ({
             />
 
             <div className="searchbar-button">
-                <Button variant="primary" onClick={handleSearch}>
+
+                <Button
+                    variant="primary"
+                    onClick={handleSearch}
+                >
                     Search
                 </Button>
+
             </div>
 
         </div>

@@ -7,7 +7,7 @@ import Footer from "../components/common/Footer/Footer.jsx";
 const Home = () => {
     return (
         <>
-            <Navbar isLoggedIn={false} />
+            <Navbar/>
 
             <main>
                 <Hero />

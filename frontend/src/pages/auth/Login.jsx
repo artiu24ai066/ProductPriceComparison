@@ -9,7 +9,12 @@ import AuthInput from "../../components/auth/AuthInput";
 import PasswordInput from "../../components/auth/PasswordInput";
 import AuthButton from "../../components/auth/AuthButton";
 
+import { loginSuccess } from "../../features/auth/authSlice";
+
+import useAppDispatch from "../../hooks/useAppDispatch";
+
 const Login = () => {
+    const dispatch = useAppDispatch();
     const navigate = useNavigate();
 
     const [loading, setLoading] = useState(false);
@@ -45,15 +50,16 @@ const Login = () => {
                 password: formData.password,
             });
 
-            const { token, user } = response.data;
+            const { accessToken, user } = response.data.data;
 
-            if (formData.rememberMe) {
-                localStorage.setItem("token", token);
-                localStorage.setItem("user", JSON.stringify(user));
-            } else {
-                sessionStorage.setItem("token", token);
-                sessionStorage.setItem("user", JSON.stringify(user));
-            }
+            const storage = formData.rememberMe
+                ? localStorage
+                : sessionStorage;
+
+            storage.setItem("accessToken", accessToken);
+            storage.setItem("user", JSON.stringify(user));
+
+            dispatch(loginSuccess({ user, accessToken }));
 
             navigate("/");
 
