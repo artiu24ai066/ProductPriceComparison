@@ -3,7 +3,6 @@ import { searchProducts } from "../controllers/product.controller.js";
 
 const router = Router();
 
-// Frontend calls: GET /api/v1/products/search?q=...
-router.get("/search", searchProducts);
+router.get("/search-results", searchProducts);
 
 export default router;

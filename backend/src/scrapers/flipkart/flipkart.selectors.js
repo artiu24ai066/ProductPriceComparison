@@ -73,10 +73,4 @@ export const FLIPKART_SELECTORS = {
         "a[href*='itm']",           // item id in URL
         "a[class*='link']",
     ],
-
-    // ── Review count (bonus) ──────────────────────────────────────────────
-    reviewCount: [
-        "span.Wphh3N",
-        "span[class*='count']",
-    ],
 };
