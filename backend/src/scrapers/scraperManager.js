@@ -3,9 +3,7 @@ import { createContext, closeBrowser } from "./config/browser.js";
 import { scrapeAmazon } from "./amazon/amazon.scraper.js";
 import { scrapeFlipkart } from "./flipkart/flipkart.scraper.js";
 import { scrapeReliance } from "./reliance/reliance.scraper.js";
-
-import { formatProduct } from "./helpers/formatProduct.js";
-import { groupProducts } from "./helpers/groupProducts.js";
+import { processProducts } from "./helpers/normalizer/index.js";
 
 export const scrapeAllStores = async (query) => {
     const amazonContext = await createContext();
@@ -29,26 +27,15 @@ export const scrapeAllStores = async (query) => {
         if (flipkart.status === "fulfilled") products.push(...flipkart.value);
         if (reliance.status === "fulfilled") products.push(...reliance.value);
 
-        products = products.map(formatProduct);
-        
-        products = groupProducts(products);
-        
-        products.sort((a, b) => a.lowestPrice - b.lowestPrice);
-
-        const searchWords = query.toLowerCase().split(" ");
-
-        products = products.filter(product =>
-            searchWords.every(word =>
-                product.normalizedTitle.includes(word)
-            )
-        );
+        const groupedProducts = processProducts(products, query);
 
         return {
             query,
             totalProducts: products.length,
-            totalStores: [ ...new Set(products.flatMap(product => product.stores.map(store => store.store))), ].length,
+            totalGroups: groupedProducts.length,
+            totalStores: Array.from(new Set(groupedProducts.flatMap((product) => product.sellers.map((seller) => seller.website)))).length,
             lastUpdated: new Date().toISOString(),
-            products,
+            products: groupedProducts,
         };
     }
     finally {
