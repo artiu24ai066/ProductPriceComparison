@@ -1,4 +1,4 @@
-# AI-Powered Price Comparison Platform (PPC)
+# AI-Powered Price Comparison Platform (PriceWise)
 
 An AI-powered full-stack price comparison platform that helps users find the best deals across multiple e-commerce websites by scraping product data, matching similar products, predicting price trends, and providing intelligent buying recommendations.
 
