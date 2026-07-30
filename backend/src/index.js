@@ -5,6 +5,7 @@ dotenv.config({
     path: './.env'
 })
 
+console.log("Mongo URI:", process.env.MONGODB_URI);
 connectDB()
     
 .then(() => {

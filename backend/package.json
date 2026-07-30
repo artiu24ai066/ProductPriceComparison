@@ -8,10 +8,10 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
-    "dev": "nodemon -r dotenv/config --experimental-json-modules src/index.js"
+    "dev": "nodemon -r dotenv/config -r ./dns-fix.cjs --experimental-json-modules src/index.js"
   },
   "dependencies": {
-    "axios": "^1.18.1",
+    "axios": "^1.19.0",
     "bcrypt": "^6.0.0",
     "cloudinary": "^2.10.0",
     "cookie-parser": "^1.4.7",
@@ -19,13 +19,13 @@
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
     "jsonwebtoken": "^9.0.3",
-    "mongoose": "^9.8.1",
+    "mongoose": "^8.24.2",
     "mongoose-paginate-v2": "^1.9.5",
     "multer": "^2.2.0",
     "nodemailer": "^9.0.3",
     "playwright": "^1.62.0",
     "slugify": "^1.6.9",
-    "user-agents": "^2.1.136"
+    "user-agents": "^2.1.137"
   },
   "devDependencies": {
     "nodemon": "^3.1.14"

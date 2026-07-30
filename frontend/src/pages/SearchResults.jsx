@@ -31,13 +31,13 @@ const SearchResults = () => {
             try {
                 setLoading(true);
                 const response = await api.get(
-                    "/products/search", {
+                    "/products/search-results", {
                         params: {
                             q: query
                         }
                     }
                 );
-                setProducts(response.data.data);
+                setProducts(response.data.data?.products || []);
 
             } catch (error) {
                 console.log(error);
