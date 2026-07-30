@@ -4,7 +4,7 @@ import { ArrowUpDown, ChevronDown } from "lucide-react";
 
 import ProductCard from "../ProductCard/ProductCard.jsx";
 
-const ProductGrid = ({ products = [], loading = false }) => {
+const ProductGrid = ({ products = [], loading = false, comparedProducts = [], onCompare = () => {} }) => {
     const [sortOpen, setSortOpen] = useState(false);
     const [selectedSort, setSelectedSort] = useState("No Sorting");
     const sortRef = useRef(null);
@@ -133,9 +133,20 @@ const ProductGrid = ({ products = [], loading = false }) => {
                     </div>
                 )}
 
-                {!loading && products.map((product) => (
-                    <ProductCard key={product.groupId || product.canonicalTitle || product?.sellers?.[0]?.url || Math.random()} product={product} />
-                ))}
+                {!loading && products.map((product) => {
+                    const productKey = product.groupId || product.canonicalTitle || product?.sellers?.[0]?.url;
+                    const isCompared = comparedProducts.some((item) =>
+                        (item?.groupId || item?.canonicalTitle || item?.sellers?.[0]?.url) === productKey
+                    );
+                    return (
+                        <ProductCard
+                            key={productKey || Math.random()}
+                            product={product}
+                            onCompare={onCompare}
+                            isCompared={isCompared}
+                        />
+                    );
+                })}
             </div>
 
         </section>

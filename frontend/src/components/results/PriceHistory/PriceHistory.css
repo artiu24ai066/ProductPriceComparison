@@ -43,6 +43,12 @@
     transition:.3s;
 }
 
+.time-filters .reset-button{
+    background:#f8fafc;
+    color:#334155;
+    border:1px solid #cbd5e1;
+}
+
 .time-filters button:hover{
     background:#dbeafe;
 }

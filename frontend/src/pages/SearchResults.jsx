@@ -24,6 +24,7 @@ const SearchResults = () => {
     const [totalStores, setTotalStores] = useState(0);
     const [lastUpdated, setLastUpdated] = useState(null);
     const [loading, setLoading] = useState(false);
+    const [comparedProducts, setComparedProducts] = useState([]);
     const [filters, setFilters] = useState({
         price: 100000,
         stores: [],
@@ -34,6 +35,25 @@ const SearchResults = () => {
         },
         ai: [],
     });
+
+    const handleCompareToggle = (product) => {
+        const productKey = product?.groupId || product?.canonicalTitle || product?.sellers?.[0]?.url;
+        setComparedProducts((prev) => {
+            const exists = prev.some((item) =>
+                (item?.groupId || item?.canonicalTitle || item?.sellers?.[0]?.url) === productKey
+            );
+            if (exists) {
+                return prev.filter((item) =>
+                    (item?.groupId || item?.canonicalTitle || item?.sellers?.[0]?.url) !== productKey
+                );
+            }
+            return [...prev, product];
+        });
+    };
+
+    const handleClearComparison = () => {
+        setComparedProducts([]);
+    };
 
     useEffect(() => {
         if (!query) return;
@@ -183,13 +203,18 @@ const SearchResults = () => {
                         }
                     />
 
-                    <ProductGrid products={filteredProducts} loading={loading} />
+                    <ProductGrid
+                        products={filteredProducts}
+                        loading={loading}
+                        comparedProducts={comparedProducts}
+                        onCompare={handleCompareToggle}
+                    />
 
                 </div>
 
-                <StoreComparison />
+                <StoreComparison product={comparedProducts[0] || filteredProducts[0] || products[0]} />
 
-                <PriceHistory />
+                <PriceHistory products={comparedProducts} onReset={handleClearComparison} />
                 <AIRecommendation />
 
                 <RelatedProducts />

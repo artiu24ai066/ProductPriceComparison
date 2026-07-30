@@ -9,7 +9,7 @@ import {
   BadgePercent,
 } from "lucide-react";
 
-const ProductCard = ({ product }) => {
+const ProductCard = ({ product, onCompare = () => {}, isCompared = false }) => {
   const title = product?.canonicalTitle || product?.brand || "Product";
   const image =
     product?.images?.primary ||
@@ -131,8 +131,12 @@ const ProductCard = ({ product }) => {
         {/* Footer */}
 
         <div className="product-footer">
-          <button className="compare-btn">
-            Compare
+          <button
+            className={`compare-btn ${isCompared ? "active" : ""}`}
+            type="button"
+            onClick={() => onCompare(product)}
+          >
+            {isCompared ? "Remove" : "Compare"}
             <ChevronRight size={18} />
           </button>
         </div>
