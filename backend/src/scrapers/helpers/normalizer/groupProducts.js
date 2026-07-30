@@ -1,4 +1,4 @@
-import { slugify, uniqueValues, parseNumber, compactObject } from "./utils.js";
+import { slugify, uniqueValues, parseNumber, compactObject, normalizeWhitespace } from "./utils.js";
 
 const tokenSimilarity = (tokensA = [], tokensB = []) => {
     if (!tokensA.length || !tokensB.length) return 0;
@@ -17,6 +17,8 @@ const toGroupKey = (normalizedAttributes, canonicalKey) => {
     if (normalizedAttributes.model) parts.push(slugify(normalizedAttributes.model));
     if (normalizedAttributes.storage) parts.push(slugify(normalizedAttributes.storage));
     if (normalizedAttributes.ram) parts.push(slugify(normalizedAttributes.ram));
+    if (normalizedAttributes.processor) parts.push(slugify(normalizedAttributes.processor));
+    if (normalizedAttributes.screenSize) parts.push(slugify(normalizedAttributes.screenSize));
     if (normalizedAttributes.packSize) parts.push(slugify(normalizedAttributes.packSize));
     if (normalizedAttributes.quantity) parts.push(slugify(normalizedAttributes.quantity));
     if (parts.length) return parts.join("-");
@@ -24,13 +26,23 @@ const toGroupKey = (normalizedAttributes, canonicalKey) => {
 };
 
 const compatibleVariantAttributes = (a, b) => {
-    const discriminators = ["storage", "ram", "packSize", "quantity", "weight", "size"];
+    const discriminators = ["storage", "ram", "processor", "screenSize", "packSize", "quantity", "weight", "size"];
     for (const key of discriminators) {
         if (a?.[key] && b?.[key] && a[key] !== b[key]) {
             return false;
         }
     }
     return true;
+};
+
+const mergeAttributes = (base = {}, extra = {}) => {
+    const result = { ...base };
+    for (const key of Object.keys(extra)) {
+        if ((result[key] === undefined || result[key] === null) && extra[key] != null) {
+            result[key] = extra[key];
+        }
+    }
+    return result;
 };
 
 const buildSeller = (product) => ({
@@ -83,7 +95,7 @@ export const groupProducts = (products = []) => {
         if (matchedGroup) {
             matchedGroup.items.push(item.product);
             matchedGroup.tokens = uniqueValues([...matchedGroup.tokens, ...item.tokens]);
-            matchedGroup.attributes = { ...matchedGroup.attributes, ...item.attributes };
+            matchedGroup.attributes = mergeAttributes(matchedGroup.attributes, item.attributes);
         } else {
             groups.push({
                 key: toGroupKey(item.attributes, item.product.canonicalKey),
@@ -118,7 +130,15 @@ export const groupProducts = (products = []) => {
             return da > db;
         });
 
-        const canonicalTitle = group.items[0].canonicalTitle || group.items[0].normalizedTitle || group.items[0].title;
+        const canonicalTitle = normalizeWhitespace([
+            group.attributes.brand,
+            group.attributes.model,
+            group.attributes.storage,
+            group.attributes.ram,
+            group.attributes.processor,
+        ]
+            .filter(Boolean)
+            .join(" ") || group.items[0].canonicalTitle || group.items[0].normalizedTitle || group.items[0].title);
         const groupId = slugify(group.key || canonicalTitle);
 
         const colors = uniqueValues(group.items.map((item) => item.variantAttributes?.color).filter(Boolean));

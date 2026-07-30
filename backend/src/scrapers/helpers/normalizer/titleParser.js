@@ -3,15 +3,21 @@ import { normalizeWhitespace, tokenize, slugify } from "./utils.js";
 const COLOR_WORDS = [
     "black", "white", "blue", "red", "green", "yellow", "pink", "purple", "gray", "grey", "brown",
     "orange", "silver", "gold", "beige", "maroon", "navy", "tan", "ivory", "burgundy", "teal",
-    "violet", "cyan", "magenta", "bronze", "mint", "peach", "lavender", "cream",
+    "violet", "cyan", "magenta", "bronze", "mint", "peach", "lavender", "cream", "ultramarine",
+];
+
+const MARKETING_TERMS = [
+    "with", "for", "by", "from", "in", "on", "to", "and", "plus", "promo", "promotion", "powered",
+    "improved", "best", "battery", "camera", "display", "screen", "front", "back", "water", "proof",
+    "oxide", "series", "edition", "version", "smart", "wireless", "charger", "headphone", "headphones",
+    "headset", "cable", "adapter", "case", "cover", "group", "selfies", "scratch", "resistance", "life",
+    "always", "everyday", "new", "latest", "official", "genuine", "quality", "sale", "offer", "deal",
 ];
 
 const UNIT_PATTERNS = [
-    { key: "storage", regex: /(\d+(?:\.\d+)?)\s*(tb|gb|mb|kb)/i },
-    { key: "ram", regex: /(\d+(?:\.\d+)?)\s*(gb|mb|kb)\s*ram/i },
-    { key: "ram", regex: /(\d+(?:\.\d+)?)\s*(gb|mb|kb)\b(?!.*\b(storage|rom)\b)/i },
-    { key: "size", regex: /size\s*(\d+(?:\.\d+)?)/i },
-    { key: "size", regex: /(\d+(?:\.\d+)?)\s*(?:inch|in|cm|mm)\b/i },
+    { key: "storage", regex: /(\d+(?:\.\d+)?)\s*(tb|gb|mb|kb)\b/i },
+    { key: "ram", regex: /(\d+(?:\.\d+)?)\s*(gb|mb|kb)\s*ram\b/i },
+    { key: "screenSize", regex: /(\d+(?:\.\d+)?)\s*(?:inch|in|cm|mm)\b/i },
     { key: "weight", regex: /(\d+(?:\.\d+)?)\s*(?:kg|g|gram|grams)\b/i },
     { key: "packSize", regex: /pack(?:\s*of)?\s*(\d+)/i },
     { key: "quantity", regex: /(\d+)\s*(?:pcs|pieces|units|count)\b/i },
@@ -26,19 +32,34 @@ const PROCESSOR_PATTERNS = [
     /(snapdragon\s*\d+)/i,
 ];
 
-const normalizeValue = (value = "") => normalizeWhitespace(value).replace(/\s+/g, " ");
-
 const removeMatches = (text, patterns) =>
     patterns.reduce((result, pattern) => result.replace(pattern, " "), text).replace(/\s+/g, " ").trim();
 
-const extractFirstMatch = (text, regex) => {
-    const match = regex.exec(text);
-    return match ? match[1]?.toString().trim() : null;
+const isVariantToken = (token) => {
+    const lower = token.toLowerCase();
+    return COLOR_WORDS.includes(lower) || /\b(?:tb|gb|mb|kb|cm|mm|inch|in|kg|g|gram|grams|pack|pcs|pieces|units|count|ram|rom)\b/i.test(lower);
+};
+
+const isStopToken = (token) => {
+    return MARKETING_TERMS.includes(token.toLowerCase());
+};
+
+const isNumericToken = (token) => /^\d+$/.test(token);
+
+const shouldStopModel = (token, nextToken) => {
+    const lower = token.toLowerCase();
+    if (isVariantToken(token)) return true;
+    if (isStopToken(token)) return true;
+    if (isNumericToken(token) && nextToken) {
+        return /^(tb|gb|mb|kb|ram|pack|pcs|pieces|units|count|kg|g|gram|grams|inch|in|cm|mm|rom)$/.test(nextToken.toLowerCase());
+    }
+    return false;
 };
 
 export const extractTitleAttributes = (rawTitle) => {
     const title = normalizeWhitespace(rawTitle || "");
-    const lowerTitle = title.toLowerCase();
+    const baseTitle = title.split(/[:\-–—]/)[0].trim();
+    const tokens = tokenize(baseTitle);
 
     const result = {
         brand: null,
@@ -53,79 +74,88 @@ export const extractTitleAttributes = (rawTitle) => {
         color: null,
     };
 
-    const tokens = tokenize(title);
-    const remainingParts = [...tokens];
-
     for (const color of COLOR_WORDS) {
-        const index = remainingParts.indexOf(color);
-        if (index !== -1) {
-            result.color = result.color || color.charAt(0).toUpperCase() + color.slice(1);
-            remainingParts.splice(index, 1);
+        const regex = new RegExp(`\\b${color}\\b`, "i");
+        if (regex.test(title)) {
+            result.color = color.charAt(0).toUpperCase() + color.slice(1);
+            break;
         }
     }
 
     for (const pattern of UNIT_PATTERNS) {
-        const match = extractFirstMatch(title, pattern.regex);
-        if (match) {
-            const value = match.toUpperCase().replace(/\s+/g, "");
-            if (pattern.key === "size") {
-                result.screenSize = result.screenSize || value;
-                result.size = result.size || value;
-            } else if (pattern.key === "storage") {
-                result.storage = result.storage || value;
-            } else if (pattern.key === "ram") {
-                result.ram = result.ram || value;
-            } else if (pattern.key === "weight") {
-                result.weight = result.weight || value;
-            } else if (pattern.key === "packSize") {
-                result.packSize = result.packSize || value;
-            } else if (pattern.key === "quantity") {
-                result.quantity = result.quantity || value;
-            }
+        const match = pattern.regex.exec(title);
+        if (!match) continue;
+        const rawValue = match[0].trim();
+        const value = rawValue.replace(/\s+/g, " ");
+        if (pattern.key === "screenSize") {
+            result.screenSize = result.screenSize || value;
+        } else if (pattern.key === "storage") {
+            result.storage = result.storage || value.toUpperCase().replace(/\s+/g, "");
+        } else if (pattern.key === "ram") {
+            result.ram = result.ram || value.toUpperCase().replace(/\s+/g, " ");
+        } else if (pattern.key === "weight") {
+            result.weight = result.weight || value.toUpperCase().replace(/\s+/g, "");
+        } else if (pattern.key === "packSize") {
+            result.packSize = result.packSize || value.toLowerCase();
+        } else if (pattern.key === "quantity") {
+            result.quantity = result.quantity || value.toLowerCase();
         }
     }
 
-    for (const processorPattern of PROCESSOR_PATTERNS) {
-        const match = processorPattern.exec(title);
+    for (const pattern of PROCESSOR_PATTERNS) {
+        const match = pattern.exec(title);
         if (match) {
             result.processor = match[0].replace(/\s+/g, " ");
             break;
         }
     }
 
-    const cleanedTitle = tokens.join(" ");
-    const colorRegex = new RegExp(`\\b(?:${COLOR_WORDS.join("|")})\\b`, "gi");
-    const noVariants = removeMatches(cleanedTitle, [
-        colorRegex,
-        /\bsize\s*\d+(?:\.\d+)?\b/gi,
-        /\b\d+(?:\.\d+)?\s*(?:inch|in|cm|mm)\b/gi,
-        /\b\d+(?:\.\d+)?\s*(?:tb|gb|mb|kb)\b/gi,
-        /\b\d+\s*(?:ram)\b/gi,
-        /\bpack(?:\s*of)?\s*\d+\b/gi,
-        /\b\d+\s*(?:pcs|pieces|units|count)\b/gi,
-    ]);
-
-    const finalTokens = tokenize(noVariants).filter((token) => token !== "of" && token !== "with");
-    const canonicalTitle = finalTokens.map((token, index) =>
-        index === 0 ? token.charAt(0).toUpperCase() + token.slice(1) : token
-    ).join(" ");
-
-    if (finalTokens.length > 0) {
-        const firstToken = finalTokens[0];
-        if (!/^(\d+|pack|set|bundle|box|combo)$/i.test(firstToken)) {
-            result.brand = firstToken.charAt(0).toUpperCase() + firstToken.slice(1);
-        }
+    if (!tokens.length) {
+        return {
+            normalizedTitle: "",
+            canonicalTitle: "",
+            canonicalKey: "",
+            attributes: result,
+            tokens: [],
+        };
     }
 
-    if (finalTokens.length > 1) {
-        result.model = finalTokens.slice(1).join(" ");
+    const firstToken = tokens[0];
+    if (!/^\d+$/.test(firstToken) && !isStopToken(firstToken)) {
+        result.brand = firstToken.charAt(0).toUpperCase() + firstToken.slice(1);
     }
+
+    const modelParts = [];
+    for (let i = 1; i < tokens.length; i += 1) {
+        const token = tokens[i];
+        const nextToken = tokens[i + 1] || "";
+        if (shouldStopModel(token, nextToken)) break;
+        modelParts.push(token);
+    }
+
+    if (modelParts.length) {
+        result.model = modelParts.map((token, index) =>
+            index === 0 ? token.charAt(0).toUpperCase() + token.slice(1) : token
+        ).join(" ");
+    }
+
+    const canonicalParts = [];
+    if (result.brand) canonicalParts.push(result.brand);
+    if (result.model) canonicalParts.push(result.model);
+    if (result.storage) canonicalParts.push(result.storage);
+    if (result.ram) canonicalParts.push(result.ram);
+    if (result.processor) canonicalParts.push(result.processor);
+    if (result.packSize) canonicalParts.push(result.packSize);
+    if (result.quantity) canonicalParts.push(result.quantity);
+
+    const canonicalTitle = canonicalParts.join(" ");
+    const canonicalTokens = tokenize(canonicalTitle).filter((token) => !isVariantToken(token) && !isStopToken(token));
 
     return {
         normalizedTitle: normalizeWhitespace(canonicalTitle),
         canonicalTitle: normalizeWhitespace(canonicalTitle),
         canonicalKey: slugify(canonicalTitle),
         attributes: result,
-        tokens: finalTokens,
+        tokens: canonicalTokens,
     };
 };
