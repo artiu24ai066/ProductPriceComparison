@@ -1,6 +1,13 @@
 import "./SearchHeader.css";
 
-const SearchHeader = ({ query, totalProducts }) => {
+const SearchHeader = ({ query, totalProducts, totalStores = 0, lastUpdated = null }) => {
+    const updatedLabel = lastUpdated
+        ? new Date(lastUpdated).toLocaleTimeString([], {
+              hour: "numeric",
+              minute: "2-digit",
+          })
+        : "Live";
+
     return (
 
         <section className="search-header">
@@ -34,7 +41,7 @@ const SearchHeader = ({ query, totalProducts }) => {
 
                 <div className="header-stat">
 
-                    <h2>5</h2>
+                    <h2>{totalStores}</h2>
 
                     <span>Stores</span>
 
@@ -42,7 +49,7 @@ const SearchHeader = ({ query, totalProducts }) => {
 
                 <div className="header-stat">
 
-                    <h2>2 min</h2>
+                    <h2>{updatedLabel}</h2>
 
                     <span>Updated</span>
 

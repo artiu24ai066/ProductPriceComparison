@@ -6,11 +6,36 @@ import {
   Sparkles,
   ChevronRight,
   Store,
-  Truck,
   BadgePercent,
 } from "lucide-react";
 
-const ProductCard = () => {
+const ProductCard = ({ product }) => {
+  const title = product?.canonicalTitle || product?.brand || "Product";
+  const image =
+    product?.images?.primary ||
+    product?.images?.gallery?.[0] ||
+    "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=700";
+
+  const lowestPrice = product?.priceStats?.lowest;
+  const highestPrice = product?.priceStats?.highest;
+  const savings =
+    lowestPrice != null && highestPrice != null && highestPrice > lowestPrice
+      ? highestPrice - lowestPrice
+      : null;
+  const rating = product?.overallRating || product?.sellers?.[0]?.rating || null;
+  const reviewCount = product?.sellers?.[0]?.reviewCount || null;
+  const topStores = (product?.sellers || [])
+    .slice()
+    .sort((a, b) => {
+      const aPrice = a?.price ?? Infinity;
+      const bPrice = b?.price ?? Infinity;
+      return aPrice - bPrice;
+    })
+    .slice(0, 3);
+
+  const formatPrice = (value) =>
+    value != null ? `₹${Number(value).toLocaleString("en-IN")}` : "-";
+
   return (
     <div className="product-card">
 
@@ -24,12 +49,12 @@ const ProductCard = () => {
 
         <div className="ai-match">
           <Sparkles size={14} />
-          <span>97%</span>
+          <span>{product?.matching?.confidence ?? "--"}%</span>
         </div>
 
         <img
-          src="https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=700"
-          alt="iphone"
+          src={image}
+          alt={title}
           className="product-image"
         />
 
@@ -42,130 +67,74 @@ const ProductCard = () => {
         {/* Tags */}
 
         <div className="product-tags">
-
-          <span className="tag trending">
-            🔥 Trending
-          </span>
+          {product?.brand ? (
+            <span className="tag trending">{product.brand}</span>
+          ) : null}
 
           <span className="tag offer">
             <BadgePercent size={13} />
             Best Offer
           </span>
-
         </div>
 
         {/* Title */}
 
-        <h3 className="product-title">
-          Apple iPhone 19 Pro Max 256GB Black
-        </h3>
+        <h3 className="product-title">{title}</h3>
 
         {/* Rating */}
 
         <div className="product-rating">
-
           <Star size={16} fill="#FDBA12" strokeWidth={1.5} />
-
-          <span>4.8</span>
-
-          <small>(18.4K Reviews)</small>
-
+          <span>{rating != null ? rating.toFixed(1) : "N/A"}</span>
+          <small>
+            {reviewCount ? `(${reviewCount} Reviews)` : "No reviews yet"}
+          </small>
         </div>
 
         {/* Price */}
 
         <div className="price-section">
-
           <div>
-
             <small>Starting From</small>
-
-            <h2>₹1,24,999</h2>
-
+            <h2>{formatPrice(lowestPrice)}</h2>
           </div>
 
-          <div className="saving-box">
-
-            Save
-
-            <span>₹4,800</span>
-
-          </div>
-
+          {savings ? (
+            <div className="saving-box">
+              Save
+              <span>{formatPrice(savings)}</span>
+            </div>
+          ) : null}
         </div>
 
         {/* Stores */}
 
         <div className="stores-list">
-
-          <div className="store lowest">
-
-            <div className="store-left">
-
-              <Store size={16} />
-
-              Amazon
-
-            </div>
-
-            <div className="store-right">
-
-              ₹1,24,999
-
-            </div>
-
-          </div>
-
-          <div className="store">
-
-            <div className="store-left">
-
-              <Store size={16} />
-
-              Flipkart
-
-            </div>
-
-            <div className="store-right">
-
-              ₹1,25,899
-
-            </div>
-
-          </div>
-
-          <div className="store">
-
-            <div className="store-left">
-
-              <Store size={16} />
-
-              Croma
-
-            </div>
-
-            <div className="store-right">
-
-              ₹1,26,499
-
-            </div>
-
-          </div>
-
+          {topStores.length ? (
+            topStores.map((seller, index) => (
+              <div
+                className={`store ${index === 0 ? "lowest" : ""}`}
+                key={`${seller.website}-${index}`}
+              >
+                <div className="store-left">
+                  <Store size={16} />
+                  {seller.sellerName || seller.website || "Store"}
+                </div>
+                <div className="store-right">{formatPrice(seller.price)}</div>
+              </div>
+            ))
+          ) : (
+            <div className="no-store-data">No store pricing available</div>
+          )}
         </div>
 
         {/* Footer */}
 
         <div className="product-footer">
-
           <button className="compare-btn">
-
             Compare
-
             <ChevronRight size={18} />
-
           </button>
-
         </div>
 
       </div>

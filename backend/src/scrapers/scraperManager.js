@@ -21,11 +21,19 @@ export const scrapeAllStores = async (query) => {
             scrapeReliance(reliancePage, query),
         ]);
 
-        let products = [];
+        const allResults = [amazon, flipkart, reliance];
+        const products = [];
 
         if (amazon.status === "fulfilled") products.push(...amazon.value);
         if (flipkart.status === "fulfilled") products.push(...flipkart.value);
         if (reliance.status === "fulfilled") products.push(...reliance.value);
+
+        const failedCount = allResults.filter((result) => result.status === "rejected").length;
+        if (failedCount === allResults.length) {
+            const error = new Error("All store scrapes failed");
+            error.details = allResults.map((result) => result.reason?.message || result.reason?.toString() || "Unknown error");
+            throw error;
+        }
 
         const groupedProducts = processProducts(products, query);
 

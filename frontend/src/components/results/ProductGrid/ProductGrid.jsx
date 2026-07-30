@@ -4,15 +4,9 @@ import { ArrowUpDown, ChevronDown } from "lucide-react";
 
 import ProductCard from "../ProductCard/ProductCard.jsx";
 
-const products = Array.from({ length: 12 }, (_, index) => ({
-    id: index + 1,
-}));
-
-const ProductGrid = () => {
+const ProductGrid = ({ products = [], loading = false }) => {
     const [sortOpen, setSortOpen] = useState(false);
-
     const [selectedSort, setSelectedSort] = useState("No Sorting");
-
     const sortRef = useRef(null);
 
     const options = [
@@ -21,7 +15,7 @@ const ProductGrid = () => {
         "Lowest Price",
         "Highest Rating",
         "Newest",
-        "Most Popular"
+        "Most Popular",
     ];
 
     useEffect(() => {
@@ -127,13 +121,21 @@ const ProductGrid = () => {
             {/* Grid */}
 
             <div className="product-grid">
+                {loading && (
+                    <div className="loading-placeholder">
+                        Fetching live prices, please wait...
+                    </div>
+                )}
 
-                {products.map((product) => (
+                {!loading && products.length === 0 && (
+                    <div className="no-results">
+                        No products found for this search query.
+                    </div>
+                )}
 
-                    <ProductCard key={product.id} />
-
+                {!loading && products.map((product) => (
+                    <ProductCard key={product.groupId || product.canonicalTitle || product?.sellers?.[0]?.url || Math.random()} product={product} />
                 ))}
-
             </div>
 
         </section>

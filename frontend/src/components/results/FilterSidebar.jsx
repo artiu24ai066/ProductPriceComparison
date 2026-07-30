@@ -12,7 +12,15 @@ import {
 
 import "./FilterSidebar.css";
 
-const FilterSidebar = () => {
+const FilterSidebar = ({
+    filters,
+    onPriceChange = () => {},
+    onStoreToggle = () => {},
+    onRatingChange = () => {},
+    onAvailabilityChange = () => {},
+    onAIToggle = () => {},
+    onReset = () => {},
+}) => {
 
     const [openSections, setOpenSections] = useState({
         price: true,
@@ -22,24 +30,17 @@ const FilterSidebar = () => {
         ai: true,
     });
 
-    const [price, setPrice] = useState(50000);
-
     const toggleSection = (section) => {
         setOpenSections((prev) => ({
             ...prev,
             [section]: !prev[section],
         }));
     };
-    
 
-    const [selectedAI, setSelectedAI] = useState([]);
-    const toggleAI = (tag) => {
-    setSelectedAI(prev =>
-        prev.includes(tag)
-            ? prev.filter(item => item !== tag)
-            : [...prev, tag]
-    );
-    };
+    const selectedAI = filters?.ai || [];
+    const selectedStores = filters?.stores || [];
+    const selectedRating = filters?.rating || 0;
+    const availability = filters?.availability || { inStock: false, outOfStock: false };
 
     return (
 
@@ -88,35 +89,25 @@ const FilterSidebar = () => {
                     <div className="filter-content">
 
                         <input
-    type="range"
-    min="0"
-    max="100000"
-    value={price}
-    onChange={(e) => setPrice(e.target.value)}
-/>
+                            type="range"
+                            min="0"
+                            max="100000"
+                            value={filters.price}
+                            onChange={(e) => onPriceChange(Number(e.target.value))}
+                        />
 
-<div className="selected-price-box">
+                        <div className="selected-price-box">
+                            <span className="selected-label">Current Price</span>
+                            <span className="selected-price">
+                                ₹{Number(filters.price).toLocaleString()}
+                            </span>
+                        </div>
 
-    <span className="selected-label">
-        Current Price
-    </span>
-
-    <span className="selected-price">
-        ₹{Number(price).toLocaleString()}
-    </span>
-
-</div>
-
-<div className="price-values">
-
-    <span>₹0</span>
-
-    <span>₹100000</span>
-
-</div>
-
+                        <div className="price-values">
+                            <span>₹0</span>
+                            <span>₹100000</span>
+                        </div>
                     </div>
-
                 )}
 
             </div>
@@ -147,25 +138,24 @@ const FilterSidebar = () => {
 
                     <div className="filter-content checkbox-list">
 
-                        <label>
-                            <input type="checkbox" />
-                            <span>Amazon</span>
-                        </label>
-
-                        <label>
-                            <input type="checkbox" />
-                            <span>Flipkart</span>
-                        </label>
-
-                        <label>
-                            <input type="checkbox" />
-                            <span>Croma</span>
-                        </label>
-
-                        <label>
-                            <input type="checkbox" />
-                            <span>Reliance Digital</span>
-                        </label>
+                        {[
+                            "Amazon",
+                            "Flipkart",
+                            "Croma",
+                            "Reliance Digital",
+                        ].map((store) => {
+                            const storeKey = store.toLowerCase();
+                            return (
+                                <label key={storeKey}>
+                                    <input
+                                        type="checkbox"
+                                        checked={selectedStores.includes(storeKey)}
+                                        onChange={() => onStoreToggle(store)}
+                                    />
+                                    <span>{store}</span>
+                                </label>
+                            );
+                        })}
 
                     </div>
 
@@ -199,21 +189,17 @@ const FilterSidebar = () => {
 
                     <div className="filter-content checkbox-list">
 
-                        <label>
-
-                            <input type="radio" name="rating" />
-
-                            <span>4★ & Above</span>
-
-                        </label>
-
-                        <label>
-
-                            <input type="radio" name="rating" />
-
-                            <span>3★ & Above</span>
-
-                        </label>
+                        {[4, 3].map((star) => (
+                            <label key={`rating-${star}`}>
+                                <input
+                                    type="radio"
+                                    name="rating"
+                                    checked={selectedRating === star}
+                                    onChange={() => onRatingChange(star)}
+                                />
+                                <span>{star}★ & Above</span>
+                            </label>
+                        ))}
 
                     </div>
 
@@ -248,19 +234,31 @@ const FilterSidebar = () => {
                     <div className="filter-content checkbox-list">
 
                         <label>
-
-                            <input type="checkbox" />
-
+                            <input
+                                type="checkbox"
+                                checked={availability.inStock}
+                                onChange={() =>
+                                    onAvailabilityChange({
+                                        ...availability,
+                                        inStock: !availability.inStock,
+                                    })
+                                }
+                            />
                             <span>In Stock</span>
-
                         </label>
 
                         <label>
-
-                            <input type="checkbox" />
-
+                            <input
+                                type="checkbox"
+                                checked={availability.outOfStock}
+                                onChange={() =>
+                                    onAvailabilityChange({
+                                        ...availability,
+                                        outOfStock: !availability.outOfStock,
+                                    })
+                                }
+                            />
                             <span>Out of Stock</span>
-
                         </label>
 
                     </div>
@@ -294,45 +292,29 @@ const FilterSidebar = () => {
                 {openSections.ai && (
 
                     <div className="ai-tags">
-
-                        <button
-    className={selectedAI.includes("Budget Friendly") ? "active" : ""}
-    onClick={() => toggleAI("Budget Friendly")}
->
-    Budget Friendly
-</button>
-
-                        <button
-    className={selectedAI.includes("Best Value") ? "active" : ""}
-    onClick={() => toggleAI("Best Value")}
->
-    Best Value
-</button>
-
-                        <button
-    className={selectedAI.includes("Lowest Today") ? "active" : ""}
-    onClick={() => toggleAI("Lowest Today")}
->
-    Lowest Today
-</button>
-
-                        <button
-    className={selectedAI.includes("AI Pick") ? "active" : ""}
-    onClick={() => toggleAI("AI Pick")}
->
-    AI Pick
-</button>
-
+                        {[
+                            "Budget Friendly",
+                            "Best Value",
+                            "Lowest Today",
+                            "AI Pick",
+                        ].map((tag) => (
+                            <button
+                                key={tag}
+                                className={selectedAI.includes(tag) ? "active" : ""}
+                                onClick={() => onAIToggle(tag)}
+                                type="button"
+                            >
+                                {tag}
+                            </button>
+                        ))}
                     </div>
 
                 )}
 
             </div>
 
-            <button className="reset-btn">
-
+            <button className="reset-btn" type="button" onClick={onReset}>
                 Reset Filters
-
             </button>
 
         </aside>
