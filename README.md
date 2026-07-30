@@ -73,5 +73,3 @@ An AI-powered full-stack price comparison platform that helps users find the bes
 - REST APIs
 
 ---
-
-## 🏗️ System Architecture
