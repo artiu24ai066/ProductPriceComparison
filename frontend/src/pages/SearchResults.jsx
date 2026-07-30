@@ -56,6 +56,10 @@ const SearchResults = () => {
     };
 
     useEffect(() => {
+        setComparedProducts([]);
+    }, [query]);
+
+    useEffect(() => {
         if (!query) return;
 
         const fetchProducts = async () => {
@@ -214,12 +218,12 @@ const SearchResults = () => {
 
                 <StoreComparison product={comparedProducts[0] || filteredProducts[0] || products[0]} />
 
-                <PriceHistory products={comparedProducts} onReset={handleClearComparison} />
+                <PriceHistory key={query || "results"} products={comparedProducts} onReset={handleClearComparison} />
                 <AIRecommendation />
 
-                <RelatedProducts />
+                <RelatedProducts products={filteredProducts.slice(0, 6)} />
 
-                <RecentlyViewed />
+                <RecentlyViewed products={filteredProducts.slice(0, 6)} />
 
             </main>
 

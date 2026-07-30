@@ -27,17 +27,26 @@ const TIME_RANGES = [
 
 const colorPalette = ["#4F46E5", "#0EA5E9", "#16A34A", "#F97316", "#E11D48"];
 
+const normalizeDay = (value) => {
+  const date = new Date(value);
+  date.setHours(0, 0, 0, 0);
+  return date.getTime();
+};
+
 const buildHistoryPoints = (product) => {
-  const history = (product?.priceHistory || []).map((entry) => ({
-    timestamp: new Date(entry.recordedAt).setHours(0, 0, 0, 0),
-    price: entry.price,
-  }));
+  const history = (product?.priceHistory || [])
+    .filter((entry) => entry?.recordedAt)
+    .map((entry) => ({
+      timestamp: normalizeDay(entry.recordedAt),
+      price: Number(entry.price),
+    }))
+    .filter((entry) => Number.isFinite(entry.price));
 
   if (!history.length) {
     const sellers = product?.sellers || [];
     return sellers.map((seller, index) => ({
       timestamp: Date.now() - (sellers.length - 1 - index) * 24 * 60 * 60 * 1000,
-      price: seller.price ?? 0,
+      price: Number(seller.price) || 0,
       label: seller.website || `Store ${index + 1}`,
     }));
   }
@@ -68,11 +77,10 @@ const formatGraphData = (products, selectedRange) => {
 
   const timestamps = Array.from(
     new Set(
-      pointsByProduct.flatMap(({ points }) =>
-        points
-          .filter((point) => point.timestamp >= rangeStart)
-          .map((point) => point.timestamp)
-      )
+      pointsByProduct.flatMap(({ points }) => {
+        const filteredPoints = points.filter((point) => point.timestamp >= rangeStart);
+        return filteredPoints.length ? filteredPoints.map((point) => point.timestamp) : points.slice(-5).map((point) => point.timestamp);
+      })
     )
   ).sort((a, b) => a - b);
 

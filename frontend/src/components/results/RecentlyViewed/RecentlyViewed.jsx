@@ -2,7 +2,7 @@ import "./RecentlyViewed.css";
 import { useRef } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
-const products = [
+const fallbackProducts = [
   {
     id: 1,
     name: "iPhone 18 Pro",
@@ -54,7 +54,7 @@ const products = [
   },
 ];
 
-const RecentlyViewed = () => {
+const RecentlyViewed = ({ products = [] }) => {
   const sliderRef = useRef(null);
 
   const scrollLeft = () => {
@@ -70,6 +70,8 @@ const RecentlyViewed = () => {
       behavior: "smooth",
     });
   };
+
+  const items = products.length ? products.slice(0, 8) : fallbackProducts;
 
   return (
     <section className="recent-section">
@@ -94,24 +96,32 @@ const RecentlyViewed = () => {
           ref={sliderRef}
         >
           <div className="recent-track">
-            {products.map((item) => (
-              <div className="recent-card" key={item.id}>
-                <img className="recent-image"
-                  src={item.image}
-                  alt={item.name}
-                />
+            {items.map((item, index) => {
+              const title = item?.canonicalTitle || item?.brand || item?.name || "Product";
+              const image = item?.images?.primary || item?.images?.gallery?.[0] || item?.image || fallbackProducts[index % fallbackProducts.length].image;
+              const price = item?.priceStats?.lowest != null
+                ? `₹${Number(item.priceStats.lowest).toLocaleString("en-IN")}`
+                : item?.price || fallbackProducts[index % fallbackProducts.length].price;
 
-                <div className="recent-overlay">
-                  <button className="recent-overlay-btn"> 
-                    Explore Again
-                  </button>
+              return (
+                <div className="recent-card" key={item?.id || item?.groupId || `${title}-${index}`}>
+                  <img className="recent-image"
+                    src={image}
+                    alt={title}
+                  />
+
+                  <div className="recent-overlay">
+                    <button className="recent-overlay-btn">
+                      Explore Again
+                    </button>
+                  </div>
+
+                  <h4>{title}</h4>
+
+                  <p>{price}</p>
                 </div>
-
-                <h4>{item.name}</h4>
-
-                <p>{item.price}</p>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
 
