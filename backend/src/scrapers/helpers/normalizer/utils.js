@@ -27,12 +27,16 @@ export const tokenize = (value = "") =>
         .split(" ")
         .filter((token) => token && token.length > 1);
 
-export const compactObject = (obj) =>
-    Object.entries(obj || {}).reduce((result, [key, value]) => {
+export const compactObject = (obj) => {
+    if (Array.isArray(obj)) {
+        return obj.filter((value) => value !== undefined && value !== null && value !== "");
+    }
+    return Object.entries(obj || {}).reduce((result, [key, value]) => {
         if (value === undefined || value === null || value === "") return result;
         if (Array.isArray(value) && value.length === 0) return result;
         result[key] = value;
         return result;
     }, {});
+};
 
 export const uniqueValues = (values = []) => [...new Set(values.filter((value) => value !== undefined && value !== null))];

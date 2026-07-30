@@ -21,7 +21,7 @@ export const formatForFrontend = (groups = []) => {
             category: group.category,
             subcategory: group.subcategory,
             attributes: compactObject(group.attributes),
-            variants: compactObject(group.variants),
+            variants: group.variants || [],
             priceStats: compactObject(group.priceStats),
             lowestPriceSeller: compactObject(group.lowestPriceSeller),
             highestPriceSeller: compactObject(group.highestPriceSeller),

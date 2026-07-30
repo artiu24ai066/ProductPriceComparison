@@ -6,6 +6,25 @@ const COLOR_WORDS = [
     "violet", "cyan", "magenta", "bronze", "mint", "peach", "lavender", "cream", "ultramarine",
 ];
 
+const BRAND_ALIASES = {
+    apple: "Apple",
+    iphone: "Apple",
+    samsung: "Samsung",
+    oneplus: "OnePlus",
+    realme: "Realme",
+    vivo: "Vivo",
+    oppo: "Oppo",
+    poco: "POCO",
+    xiaomi: "Xiaomi",
+    google: "Google",
+    nokia: "Nokia",
+    motorola: "Motorola",
+    lenovo: "Lenovo",
+    asus: "ASUS",
+    acer: "Acer",
+    hp: "HP",
+};
+
 const MARKETING_TERMS = [
     "with", "for", "by", "from", "in", "on", "to", "and", "plus", "promo", "promotion", "powered",
     "improved", "best", "battery", "camera", "display", "screen", "front", "back", "water", "proof",
@@ -121,9 +140,30 @@ export const extractTitleAttributes = (rawTitle) => {
     }
 
     const firstToken = tokens[0];
-    if (!/^\d+$/.test(firstToken) && !isStopToken(firstToken)) {
+    const brandCandidate = BRAND_ALIASES[firstToken?.toLowerCase()] || null;
+    if (brandCandidate) {
+        result.brand = brandCandidate;
+    } else if (!/^\d+$/.test(firstToken) && !isStopToken(firstToken)) {
         result.brand = firstToken.charAt(0).toUpperCase() + firstToken.slice(1);
     }
+
+    const normalizeModelToken = (token) => {
+        const lower = token.toLowerCase();
+        const special = {
+            iphone: "iPhone",
+            pro: "Pro",
+            max: "Max",
+            ultra: "Ultra",
+            air: "Air",
+            mini: "Mini",
+            plus: "Plus",
+            se: "SE",
+            xl: "XL",
+            xs: "XS",
+            xr: "XR",
+        };
+        return special[lower] || token.charAt(0).toUpperCase() + token.slice(1);
+    };
 
     const modelParts = [];
     for (let i = 1; i < tokens.length; i += 1) {
@@ -134,9 +174,12 @@ export const extractTitleAttributes = (rawTitle) => {
     }
 
     if (modelParts.length) {
-        result.model = modelParts.map((token, index) =>
-            index === 0 ? token.charAt(0).toUpperCase() + token.slice(1) : token
-        ).join(" ");
+        const normalizedModel = modelParts.map(normalizeModelToken).join(" ");
+        if (firstToken?.toLowerCase() === "iphone" && result.brand === "Apple") {
+            result.model = `iPhone ${normalizedModel}`;
+        } else {
+            result.model = normalizedModel;
+        }
     }
 
     const canonicalParts = [];

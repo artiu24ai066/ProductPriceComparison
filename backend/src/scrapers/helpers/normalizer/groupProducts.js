@@ -1,16 +1,5 @@
 import { slugify, uniqueValues, parseNumber, compactObject, normalizeWhitespace } from "./utils.js";
 
-const tokenSimilarity = (tokensA = [], tokensB = []) => {
-    if (!tokensA.length || !tokensB.length) return 0;
-    const setA = new Set(tokensA);
-    const setB = new Set(tokensB);
-    let common = 0;
-    for (const token of setA) {
-        if (setB.has(token)) common += 1;
-    }
-    return common / Math.min(setA.size, setB.size);
-};
-
 const toGroupKey = (normalizedAttributes, canonicalKey) => {
     const parts = [];
     if (normalizedAttributes.brand) parts.push(slugify(normalizedAttributes.brand));
@@ -18,7 +7,6 @@ const toGroupKey = (normalizedAttributes, canonicalKey) => {
     if (normalizedAttributes.storage) parts.push(slugify(normalizedAttributes.storage));
     if (normalizedAttributes.ram) parts.push(slugify(normalizedAttributes.ram));
     if (normalizedAttributes.processor) parts.push(slugify(normalizedAttributes.processor));
-    if (normalizedAttributes.screenSize) parts.push(slugify(normalizedAttributes.screenSize));
     if (normalizedAttributes.packSize) parts.push(slugify(normalizedAttributes.packSize));
     if (normalizedAttributes.quantity) parts.push(slugify(normalizedAttributes.quantity));
     if (parts.length) return parts.join("-");
@@ -35,6 +23,24 @@ const compatibleVariantAttributes = (a, b) => {
     return true;
 };
 
+const dedupeProducts = (products = []) => {
+    const seen = new Set();
+    return (products || []).filter((product) => {
+        const color = product.variantAttributes?.color || "";
+        const size = product.variantAttributes?.size || "";
+        const dedupeKey = slugify([
+            product.store || "",
+            product.canonicalKey || product.normalizedTitle || product.title || "",
+            product.url || "",
+            color,
+            size,
+        ].join(" "));
+        if (seen.has(dedupeKey)) return false;
+        seen.add(dedupeKey);
+        return true;
+    });
+};
+
 const mergeAttributes = (base = {}, extra = {}) => {
     const result = { ...base };
     for (const key of Object.keys(extra)) {
@@ -47,25 +53,85 @@ const mergeAttributes = (base = {}, extra = {}) => {
 
 const buildSeller = (product) => ({
     website: product.store || null,
+    sellerName: product.sellerName || null,
     title: product.rawTitle || product.title || null,
     price: product.price,
+    currentPrice: product.price,
     originalPrice: product.originalPrice,
     discount: product.discount,
-    delivery: product.delivery,
-    rating: product.rating,
-    reviewCount: product.reviewCount,
-    sellerName: product.sellerName,
-    url: product.url,
-    affiliateUrl: null,
-    availability: product.availability || (product.price != null ? "In Stock" : "Unavailable"),
-    image: product.image,
     coupon: product.coupon,
+    delivery: product.delivery,
+    shipping: product.shipping,
     emi: product.emi,
     exchangeOffer: product.exchangeOffer,
     bankOffer: product.bankOffer,
-    shipping: product.shipping,
+    rating: product.rating,
+    reviewCount: product.reviewCount,
+    stockStatus: product.availability || (product.price != null ? "In Stock" : "Unavailable"),
+    availability: product.availability || (product.price != null ? "In Stock" : "Unavailable"),
+    url: product.url,
+    affiliateUrl: null,
+    image: product.image,
     scrapedAt: product.scrapedAt,
 });
+
+const normalizeSellerUrl = (rawUrl = "", website = "") => {
+    if (!rawUrl) return "";
+    let normalized = rawUrl.toString().trim();
+
+    try {
+        const url = new URL(normalized);
+        normalized = `${url.origin}${url.pathname}`;
+    } catch (error) {
+        normalized = normalized.replace(/[#?].*$/, "");
+    }
+
+    normalized = normalized.replace(/\/+$/, "");
+
+    if (/amazon\./i.test(website) || /amazon\./i.test(normalized)) {
+        normalized = normalized.replace(/\/ref=.*$/i, "");
+        normalized = normalized.replace(/\/gp\/product\/([A-Z0-9]+)/i, "/gp/product/$1");
+        normalized = normalized.replace(/\/dp\/([A-Z0-9]+)/i, "/dp/$1");
+    }
+
+    if (/flipkart\./i.test(website) || /flipkart\./i.test(normalized)) {
+        normalized = normalized.replace(/\/p\/itm[^\/]+(?:\/.*)?$/i, (match) => match.split("/")[0] + "/" + match.split("/")[1]);
+        normalized = normalized.replace(/\/ref=.*$/i, "");
+    }
+
+    normalized = normalized.replace(/\/ref=.*$/i, "");
+    normalized = normalized.replace(/\/sr_[^\/]+$/i, "");
+    normalized = normalized.replace(/\?.*$/, "");
+    normalized = normalized.replace(/#.*$/, "");
+
+    return normalized;
+};
+
+const getSellerKey = (seller) => {
+    if (!seller) return "";
+    const urlSegment = normalizeSellerUrl(seller.url, seller.website);
+    if (urlSegment) return slugify([seller.website, urlSegment].filter(Boolean).join(" "));
+    return slugify([
+        seller.website,
+        seller.sellerName,
+        seller.title,
+        seller.price,
+        seller.image,
+    ]
+        .filter(Boolean)
+        .join(" "));
+};
+
+const dedupeSellers = (sellers = []) => {
+    const seen = new Set();
+    return (sellers || []).filter((seller) => {
+        const key = getSellerKey(seller);
+        if (!key) return false;
+        if (seen.has(key)) return false;
+        seen.add(key);
+        return true;
+    });
+};
 
 const findBestSeller = (sellers, comparator) => sellers.reduce((best, seller) => {
     if (!best) return seller;
@@ -74,40 +140,38 @@ const findBestSeller = (sellers, comparator) => sellers.reduce((best, seller) =>
 }, null);
 
 export const groupProducts = (products = []) => {
-    const normalized = (products || []).map((product) => ({
+    const deduped = dedupeProducts(products);
+    const normalized = (deduped || []).map((product) => ({
         product,
         tokens: slugify(product.canonicalTitle || product.normalizedTitle || product.title || product.rawTitle || "").split("-").filter(Boolean),
         attributes: product.attributes || {},
     }));
 
-    const groups = [];
+    const groupsByKey = new Map();
 
     for (const item of normalized) {
-        let matchedGroup = null;
-        for (const group of groups) {
-            const similarity = tokenSimilarity(item.tokens, group.tokens);
-            if (similarity >= 0.65 && compatibleVariantAttributes(item.attributes, group.attributes)) {
-                matchedGroup = group;
-                break;
-            }
-        }
-
-        if (matchedGroup) {
-            matchedGroup.items.push(item.product);
-            matchedGroup.tokens = uniqueValues([...matchedGroup.tokens, ...item.tokens]);
-            matchedGroup.attributes = mergeAttributes(matchedGroup.attributes, item.attributes);
-        } else {
-            groups.push({
-                key: toGroupKey(item.attributes, item.product.canonicalKey),
+        const itemKey = toGroupKey(item.attributes, item.product.canonicalKey) || slugify(item.product.canonicalKey || item.product.normalizedTitle || item.product.title || item.product.rawTitle || "");
+        if (!groupsByKey.has(itemKey)) {
+            groupsByKey.set(itemKey, {
+                key: itemKey,
                 tokens: item.tokens,
                 attributes: item.attributes,
                 items: [item.product],
             });
+            continue;
         }
+
+        const group = groupsByKey.get(itemKey);
+        group.items.push(item.product);
+        group.tokens = uniqueValues([...group.tokens, ...item.tokens]);
+        group.attributes = mergeAttributes(group.attributes, item.attributes);
     }
 
+    const groups = Array.from(groupsByKey.values());
+
     return groups.map((group) => {
-        const sellers = group.items.map(buildSeller);
+        const rawSellers = group.items.map(buildSeller);
+        const sellers = dedupeSellers(rawSellers);
         const prices = sellers.map((seller) => seller.price).filter((price) => price != null);
         const lowest = prices.length ? Math.min(...prices) : null;
         const highest = prices.length ? Math.max(...prices) : null;
@@ -143,6 +207,43 @@ export const groupProducts = (products = []) => {
 
         const colors = uniqueValues(group.items.map((item) => item.variantAttributes?.color).filter(Boolean));
         const sizes = uniqueValues(group.items.map((item) => item.variantAttributes?.size).filter(Boolean));
+        const variantMap = new Map();
+        for (const item of group.items) {
+            const color = item.variantAttributes?.color || null;
+            const size = item.variantAttributes?.size || null;
+            const variantKey = slugify([color, size].filter(Boolean).join("-").trim()) || "default";
+            if (!variantMap.has(variantKey)) {
+                variantMap.set(variantKey, {
+                    variantId: variantKey,
+                    color,
+                    size,
+                    images: [],
+                    sellers: [],
+                });
+            }
+            const variant = variantMap.get(variantKey);
+            if (item.image) {
+                variant.images = uniqueValues([...variant.images, item.image]);
+            }
+            variant.sellers.push(buildSeller(item));
+        }
+
+        for (const variant of variantMap.values()) {
+            variant.sellers = dedupeSellers(variant.sellers);
+        }
+
+        const matchedFields = [];
+        if (group.attributes.brand) matchedFields.push("brand");
+        if (group.attributes.model) matchedFields.push("model");
+        if (group.attributes.storage) matchedFields.push("storage");
+        if (group.attributes.ram) matchedFields.push("ram");
+        if (group.attributes.processor) matchedFields.push("processor");
+
+        const sellerImages = group.items.reduce((map, item) => {
+            if (!item.store || !item.image) return map;
+            map[item.store] = uniqueValues([...(map[item.store] || []), item.image]);
+            return map;
+        }, {});
 
         return {
             groupId,
@@ -163,9 +264,21 @@ export const groupProducts = (products = []) => {
                 colorOptions: colors.length ? colors : undefined,
                 sizeOptions: sizes.length ? sizes : undefined,
             }),
-            variants: compactObject({
+            variantOptions: compactObject({
                 colors,
                 sizes,
+            }),
+            variants: Array.from(variantMap.values()).map((variant) => compactObject({
+                variantId: variant.variantId,
+                color: variant.color,
+                size: variant.size,
+                images: variant.images,
+                sellers: variant.sellers.map((seller) => compactObject(seller)),
+            })),
+            searchTokens: uniqueValues(group.tokens),
+            matching: compactObject({
+                confidence: matchedFields.includes("brand") && matchedFields.includes("model") && matchedFields.includes("storage") ? 98 : 75,
+                matchedFields: matchedFields.length ? matchedFields : undefined,
             }),
             priceStats: compactObject({
                 lowest,
@@ -179,15 +292,24 @@ export const groupProducts = (products = []) => {
             bestDiscountSeller: bestDiscountSeller ? compactObject(bestDiscountSeller) : null,
             cheapestAvailableSeller: cheapestAvailableSeller ? compactObject(cheapestAvailableSeller) : null,
             sellers,
-            specifications: {},
+            specifications: compactObject({
+                display: group.attributes.screenSize,
+                processor: group.attributes.processor,
+                ram: group.attributes.ram,
+                storage: group.attributes.storage,
+                weight: group.attributes.weight,
+                packSize: group.attributes.packSize,
+                quantity: group.attributes.quantity,
+            }),
             priceHistory: [],
             aiPrediction: {},
             reviewSummary: {},
             discountAnalysis: {},
-            images: {
+            images: compactObject({
                 primary: uniqueValues(group.items.map((item) => item.image))[0] || null,
                 gallery: uniqueValues(group.items.map((item) => item.image).filter(Boolean)),
-            },
+                sellerImages: Object.keys(sellerImages).length ? sellerImages : undefined,
+            }),
             availability: cheapestAvailableSeller?.availability || sellers[0]?.availability || null,
             lastUpdated: new Date().toISOString(),
         };
