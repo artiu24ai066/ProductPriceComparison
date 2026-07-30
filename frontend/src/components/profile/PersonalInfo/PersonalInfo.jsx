@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import "./PersonalInfo.css";
 import {
   User,
@@ -9,8 +10,44 @@ import {
   Map,
   Hash
 } from "lucide-react";
+import api from "../../../api/axios";
+import useAppDispatch from "../../../hooks/useAppDispatch";
+import { restoreUser } from "../../../features/auth/authSlice";
 
-const PersonalInfo = () => {
+const PersonalInfo = ({ user }) => {
+  const dispatch = useAppDispatch();
+  const [formData, setFormData] = useState({ fullname: "", email: "", username: "" });
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    setFormData({
+      fullname: user?.fullname || "",
+      email: user?.email || "",
+      username: user?.username || user?.email?.split("@")[0] || "",
+    });
+  }, [user]);
+
+  const handleChange = (field) => (event) => {
+    setFormData((prev) => ({ ...prev, [field]: event.target.value }));
+  };
+
+  const handleSave = async (event) => {
+    event.preventDefault();
+    setSaving(true);
+
+    try {
+      const response = await api.patch("/users/update-account", {
+        fullname: formData.fullname,
+        email: formData.email,
+      });
+
+      dispatch(restoreUser({ user: response.data.data }));
+    } catch (error) {
+      console.error("Failed to update profile", error);
+    } finally {
+      setSaving(false);
+    }
+  };
 
   return (
 
@@ -33,7 +70,8 @@ const PersonalInfo = () => {
               <User size={18}/>
               <input
                 type="text"
-                defaultValue="Arti Jangid"
+                value={formData.fullname}
+                onChange={handleChange("fullname")}
               />
             </div>
 
@@ -47,7 +85,8 @@ const PersonalInfo = () => {
               <Mail size={18}/>
               <input
                 type="email"
-                defaultValue="arti@gmail.com"
+                value={formData.email}
+                onChange={handleChange("email")}
               />
             </div>
 
@@ -75,7 +114,8 @@ const PersonalInfo = () => {
               <Hash size={18}/>
               <input
                 type="text"
-                defaultValue="arti_j"
+                value={formData.username}
+                onChange={handleChange("username")}
               />
             </div>
 
@@ -157,9 +197,9 @@ const PersonalInfo = () => {
 
       </div>
 
-      <button className="save-profile-btn">
+      <button className="save-profile-btn" type="button" onClick={handleSave} disabled={saving}>
 
-        Save Changes
+        {saving ? "Saving..." : "Save Changes"}
 
       </button>
 

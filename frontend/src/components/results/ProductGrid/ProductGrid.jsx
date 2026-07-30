@@ -1,5 +1,5 @@
 import "./ProductGrid.css";
-import { useState, useRef, useEffect } from "react";
+import { useMemo, useState, useRef, useEffect } from "react";
 import { ArrowUpDown, ChevronDown } from "lucide-react";
 
 import ProductCard from "../ProductCard/ProductCard.jsx";
@@ -41,6 +41,28 @@ const ProductGrid = ({ products = [], loading = false, comparedProducts = [], on
     };
 
 }, []);
+
+    const sortedProducts = useMemo(() => {
+        const list = [...products];
+
+        switch (selectedSort) {
+            case "Lowest Price":
+                return list.sort((a, b) => (a?.priceStats?.lowest ?? Infinity) - (b?.priceStats?.lowest ?? Infinity));
+            case "Highest Rating":
+                return list.sort((a, b) => (b?.overallRating ?? b?.sellers?.[0]?.rating ?? 0) - (a?.overallRating ?? a?.sellers?.[0]?.rating ?? 0));
+            case "Newest":
+                return list.sort((a, b) => {
+                    const aDate = new Date(a?.lastUpdated || a?.sellers?.[0]?.scrapedAt || a?.createdAt || 0).getTime();
+                    const bDate = new Date(b?.lastUpdated || b?.sellers?.[0]?.scrapedAt || b?.createdAt || 0).getTime();
+                    return bDate - aDate;
+                });
+            case "Most Popular":
+            case "AI Recommended":
+                return list.sort((a, b) => (b?.matching?.confidence ?? 0) - (a?.matching?.confidence ?? 0));
+            default:
+                return list;
+        }
+    }, [products, selectedSort]);
 
     return (
 
@@ -133,7 +155,7 @@ const ProductGrid = ({ products = [], loading = false, comparedProducts = [], on
                     </div>
                 )}
 
-                {!loading && products.map((product) => {
+                {!loading && sortedProducts.map((product) => {
                     const productKey = product.groupId || product.canonicalTitle || product?.sellers?.[0]?.url;
                     const isCompared = comparedProducts.some((item) =>
                         (item?.groupId || item?.canonicalTitle || item?.sellers?.[0]?.url) === productKey

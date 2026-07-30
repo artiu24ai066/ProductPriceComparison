@@ -7,7 +7,7 @@ import {
   Pencil,
 } from "lucide-react";
 
-const ProfileBanner = () => {
+const ProfileBanner = ({ user }) => {
   return (
     <section className="profile-banner">
 
@@ -37,7 +37,7 @@ const ProfileBanner = () => {
             <span>Verified</span>
           </div>
 
-          <h1>Arti Jangid</h1>
+          <h1>{user?.fullname || "Your Name"}</h1>
 
           <p>
             Smart shopping enthusiast who never misses the best deal.
@@ -47,17 +47,17 @@ const ProfileBanner = () => {
 
             <div>
               <Mail size={17} />
-              arti@gmail.com
+              {user?.email || "your@email.com"}
             </div>
 
             <div>
               <MapPin size={17} />
-              Hyderabad, India
+              India
             </div>
 
             <div>
               <CalendarDays size={17} />
-              Joined July 2026
+              Joined recently
             </div>
 
           </div>

@@ -16,6 +16,9 @@ import PriceHistory from "../components/results/PriceHistory/PriceHistory.jsx";
 
 import "../styles/results.css";
 
+const getProductKey = (product) =>
+    product?.groupId || product?.canonicalTitle || product?.sellers?.[0]?.url || product?.id || "";
+
 const SearchResults = () => {
     const [searchParams] = useSearchParams();
     const query = searchParams.get("q") || "";
@@ -25,6 +28,14 @@ const SearchResults = () => {
     const [lastUpdated, setLastUpdated] = useState(null);
     const [loading, setLoading] = useState(false);
     const [comparedProducts, setComparedProducts] = useState([]);
+    const [recentlyViewedProducts, setRecentlyViewedProducts] = useState(() => {
+        if (typeof window === "undefined") return [];
+        try {
+            return JSON.parse(localStorage.getItem("pricewise-recently-viewed") || "[]");
+        } catch {
+            return [];
+        }
+    });
     const [filters, setFilters] = useState({
         price: 100000,
         stores: [],
@@ -37,16 +48,18 @@ const SearchResults = () => {
     });
 
     const handleCompareToggle = (product) => {
-        const productKey = product?.groupId || product?.canonicalTitle || product?.sellers?.[0]?.url;
+        const productKey = getProductKey(product);
         setComparedProducts((prev) => {
-            const exists = prev.some((item) =>
-                (item?.groupId || item?.canonicalTitle || item?.sellers?.[0]?.url) === productKey
-            );
+            const exists = prev.some((item) => getProductKey(item) === productKey);
             if (exists) {
-                return prev.filter((item) =>
-                    (item?.groupId || item?.canonicalTitle || item?.sellers?.[0]?.url) !== productKey
-                );
+                return prev.filter((item) => getProductKey(item) !== productKey);
             }
+
+            setRecentlyViewedProducts((history) => {
+                const filtered = history.filter((item) => getProductKey(item) !== productKey);
+                return [product, ...filtered].slice(0, 8);
+            });
+
             return [...prev, product];
         });
     };
@@ -58,6 +71,12 @@ const SearchResults = () => {
     useEffect(() => {
         setComparedProducts([]);
     }, [query]);
+
+    useEffect(() => {
+        if (typeof window !== "undefined") {
+            localStorage.setItem("pricewise-recently-viewed", JSON.stringify(recentlyViewedProducts));
+        }
+    }, [recentlyViewedProducts]);
 
     useEffect(() => {
         if (!query) return;
@@ -223,7 +242,7 @@ const SearchResults = () => {
 
                 <RelatedProducts products={filteredProducts.slice(0, 6)} />
 
-                <RecentlyViewed products={filteredProducts.slice(0, 6)} />
+                <RecentlyViewed products={recentlyViewedProducts} />
 
             </main>
 
