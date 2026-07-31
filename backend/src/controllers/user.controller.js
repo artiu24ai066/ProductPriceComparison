@@ -322,6 +322,66 @@ const updateAccountDetails = asyncHandler(async(req, res) => {
 
 const normalizeWishlistKey = (value = "") => value.toString().trim().toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)+/g, "");
 
+const stableHash = (value = "") => {
+    const input = value.toString();
+    let hash = 0;
+
+    for (let index = 0; index < input.length; index += 1) {
+        hash = ((hash << 5) - hash + input.charCodeAt(index)) | 0;
+    }
+
+    return Math.abs(hash).toString(16);
+};
+
+const canonicalizeWishlistValue = (value) => {
+    if (Array.isArray(value)) {
+        return value.map(canonicalizeWishlistValue);
+    }
+
+    if (value && typeof value === "object") {
+        return Object.keys(value)
+            .sort()
+            .reduce((result, key) => {
+                if (["lastUpdated", "createdAt", "updatedAt", "__v"].includes(key)) {
+                    return result;
+                }
+
+                const normalizedValue = canonicalizeWishlistValue(value[key]);
+                if (normalizedValue !== undefined) {
+                    result[key] = normalizedValue;
+                }
+                return result;
+            }, {});
+    }
+
+    if (value === undefined) {
+        return undefined;
+    }
+
+    return value;
+};
+
+const getSellerUrls = (product = {}) => {
+    const sellers = Array.isArray(product.sellers) ? product.sellers : [];
+    return sellers
+        .map((seller) => seller?.url || seller?.affiliateUrl || "")
+        .filter(Boolean)
+        .sort();
+};
+
+const buildWishlistKey = (product = {}) => {
+    const primarySellerUrl = product.lowestPriceSeller?.url || product.cheapestAvailableSeller?.url || product.sellers?.[0]?.url || product.url || "";
+    const baseKey = [
+        product.groupId,
+        product.canonicalTitle,
+        primarySellerUrl,
+    ]
+        .filter(Boolean)
+        .join("::");
+
+    return `wk_${stableHash(baseKey || JSON.stringify(canonicalizeWishlistValue(product) || {}))}`;
+};
+
 const formatPriceText = (value) => {
     if (value === null || value === undefined || Number.isNaN(Number(value))) {
         return "";
@@ -331,17 +391,7 @@ const formatPriceText = (value) => {
 };
 
 const buildWishlistSnapshot = (product = {}) => {
-    const productKey = normalizeWishlistKey(
-        product.groupId ||
-        product.canonicalTitle ||
-        product.slug ||
-        product.id ||
-        product._id ||
-        product.sellers?.[0]?.url ||
-        product.url ||
-        product.name ||
-        product.title
-    );
+    const productKey = buildWishlistKey(product);
 
     if (!productKey) {
         throw new APIerror(400, "Product data is required");

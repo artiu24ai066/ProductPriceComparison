@@ -12,7 +12,7 @@ import {
 
 import useAppDispatch from "../../../hooks/useAppDispatch";
 import useAppSelector from "../../../hooks/useAppSelector";
-import { normalizeWishlistKey, toggleWishlistItem } from "../../../features/wishlist/wishlistSlice";
+import { buildWishlistKey, toggleWishlistItem } from "../../../features/wishlist/wishlistSlice";
 
 const ProductCard = ({ product, onCompare = () => {}, isCompared = false }) => {
   const dispatch = useAppDispatch();
@@ -25,16 +25,7 @@ const ProductCard = ({ product, onCompare = () => {}, isCompared = false }) => {
     product?.images?.gallery?.[0] ||
     "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=700";
 
-  const productKey = normalizeWishlistKey(
-    product?.groupId ||
-    product?.canonicalTitle ||
-    product?.slug ||
-    product?.id ||
-    product?._id ||
-    product?.sellers?.[0]?.url ||
-    product?.url ||
-    title
-  );
+  const productKey = buildWishlistKey(product);
 
   const isWishlisted = useMemo(
     () => items.some((item) => item.productKey === productKey),
