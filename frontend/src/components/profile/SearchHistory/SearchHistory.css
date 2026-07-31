@@ -74,6 +74,14 @@
 
     font-weight:700;
 
+
+.history-actions{
+
+    display:flex;
+    align-items:center;
+    gap:12px;
+
+}
     margin-bottom:10px;
 
 }
@@ -192,6 +200,30 @@
 
 }
 
+.history-delete{
+
+    width:48px;
+    height:48px;
+    border:none;
+    border-radius:14px;
+    background:rgba(255,77,79,.15);
+    color:#ff7b7c;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    cursor:pointer;
+    transition:.3s;
+
+}
+
+.history-delete:hover{
+
+    transform:scale(1.08);
+    background:#ff4d4f;
+    color:white;
+
+}
+
 @media(max-width:850px){
 
 .history-card{
@@ -203,6 +235,19 @@
 }
 
 .history-view{
+
+    width:100%;
+
+}
+
+.history-actions{
+
+    width:100%;
+    flex-direction:column;
+
+}
+
+.history-delete{
 
     width:100%;
 

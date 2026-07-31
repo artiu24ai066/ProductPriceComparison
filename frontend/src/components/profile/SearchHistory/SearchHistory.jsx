@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import "./SearchHistory.css";
 import api from "../../../api/axios";
 import {
@@ -9,6 +10,7 @@ import {
 } from "lucide-react";
 
 const SearchHistory = () => {
+  const navigate = useNavigate();
   const [history, setHistory] = useState([]);
   const [loading, setLoading] = useState(false);
 
@@ -27,6 +29,26 @@ const SearchHistory = () => {
 
     loadHistory();
   }, []);
+
+  const handleDeleteItem = async (historyId) => {
+    if (!historyId) return;
+
+    try {
+      const response = await api.delete(`/users/search-history/${historyId}`);
+      setHistory(response.data?.data || []);
+    } catch (error) {
+      console.error("Failed to delete search history item", error);
+    }
+  };
+
+  const handleClearHistory = async () => {
+    try {
+      const response = await api.delete("/users/search-history");
+      setHistory(response.data?.data || []);
+    } catch (error) {
+      console.error("Failed to clear search history", error);
+    }
+  };
 
   const groupedHistory = useMemo(() => {
     const groups = [];
@@ -47,6 +69,7 @@ const SearchHistory = () => {
       }
 
       group.items.push({
+        id: item._id,
         product: item.query,
         time: date.toLocaleTimeString("en-IN", { hour: "numeric", minute: "2-digit" }),
         category: "Search",
@@ -72,7 +95,7 @@ const SearchHistory = () => {
 
         </div>
 
-        <button className="clear-history-btn">
+        <button className="clear-history-btn" onClick={handleClearHistory}>
 
           <Trash2 size={18}/>
 
@@ -88,7 +111,7 @@ const SearchHistory = () => {
 
         <div
           className="history-group"
-          key={group.id}
+          key={group.day}
         >
 
           <div className="history-day">
@@ -101,7 +124,7 @@ const SearchHistory = () => {
 
             <div
               className="history-card"
-              key={index}
+              key={item.id || index}
             >
 
               <div className="history-icon">
@@ -126,11 +149,27 @@ const SearchHistory = () => {
 
               </div>
 
-              <button className="history-view">
+              <div className="history-actions">
+
+              <button
+                className="history-view"
+                onClick={() => navigate(`/search-results?q=${encodeURIComponent(item.product)}`)}
+              >
 
                 <ExternalLink size={18}/>
 
               </button>
+
+              <button
+                className="history-delete"
+                onClick={() => handleDeleteItem(item.id)}
+              >
+
+                <Trash2 size={18}/>
+
+              </button>
+
+              </div>
 
             </div>
 

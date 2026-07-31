@@ -481,6 +481,32 @@ const removeWishlistItem = asyncHandler(async (req, res) => {
         .json(new APIresponse(200, wishlist.map(mapWishlistItem), "Wishlist item removed successfully"));
 });
 
+const deleteSearchHistoryItem = asyncHandler(async (req, res) => {
+    const historyId = req.params.historyId;
+
+    if (!historyId || !mongoose.Types.ObjectId.isValid(historyId)) {
+        throw new APIerror(400, "Valid history id is required");
+    }
+
+    await SearchHistory.deleteOne({ _id: historyId, user: req.user._id });
+
+    const threeMonthsAgo = new Date();
+    threeMonthsAgo.setMonth(threeMonthsAgo.getMonth() - 3);
+
+    const history = await SearchHistory.find({
+        user: req.user._id,
+        createdAt: { $gte: threeMonthsAgo },
+    })
+        .sort({ searchedAt: -1, createdAt: -1 });
+
+    return res.status(200).json(new APIresponse(200, history, "Search history item deleted successfully"));
+});
+
+const clearSearchHistory = asyncHandler(async (req, res) => {
+    await SearchHistory.deleteMany({ user: req.user._id });
+    return res.status(200).json(new APIresponse(200, [], "Search history cleared successfully"));
+});
+
 const getSearchHistory = asyncHandler(async (req, res) => {
     const threeMonthsAgo = new Date();
     threeMonthsAgo.setMonth(threeMonthsAgo.getMonth() - 3);
@@ -559,6 +585,8 @@ export {
     getWishlist,
     toggleWishlist,
     removeWishlistItem,
+    deleteSearchHistoryItem,
+    clearSearchHistory,
     getSearchHistory,
     // updateUserAvatar,
 };
