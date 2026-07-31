@@ -320,6 +320,54 @@ const updateAccountDetails = asyncHandler(async(req, res) => {
     .json(new APIresponse(200, user, "Account details updated successfully"))
 });
 
+const SEARCH_HISTORY_RETENTION_MONTHS = 6;
+const SEARCH_HISTORY_DUPLICATE_WINDOW_MS = 60 * 1000;
+
+const getSearchHistoryRetentionCutoff = () => {
+    const cutoff = new Date();
+    cutoff.setMonth(cutoff.getMonth() - SEARCH_HISTORY_RETENTION_MONTHS);
+    return cutoff;
+};
+
+const pruneAndLoadSearchHistory = async (userId) => {
+    const retentionCutoff = getSearchHistoryRetentionCutoff();
+    const history = await SearchHistory.find({ user: userId }).sort({ searchedAt: -1, createdAt: -1 });
+
+    const visibleHistory = [];
+    const expiredIds = [];
+
+    for (const item of history) {
+        const itemTime = new Date(item.searchedAt || item.createdAt).getTime();
+
+        if (itemTime < retentionCutoff.getTime()) {
+            expiredIds.push(item._id);
+            continue;
+        }
+
+        const lastItem = visibleHistory[visibleHistory.length - 1];
+        const currentNormalizedQuery = (item.normalizedQuery || item.query || "").toLowerCase().trim();
+
+        if (lastItem) {
+            const lastTime = new Date(lastItem.searchedAt || lastItem.createdAt).getTime();
+            const lastNormalizedQuery = (lastItem.normalizedQuery || lastItem.query || "").toLowerCase().trim();
+            const isSameQuery = currentNormalizedQuery && lastNormalizedQuery && currentNormalizedQuery === lastNormalizedQuery;
+            const isRecentDuplicate = isSameQuery && lastTime - itemTime <= SEARCH_HISTORY_DUPLICATE_WINDOW_MS;
+
+            if (isRecentDuplicate) {
+                continue;
+            }
+        }
+
+        visibleHistory.push(item);
+    }
+
+    if (expiredIds.length) {
+        await SearchHistory.deleteMany({ _id: { $in: expiredIds }, user: userId });
+    }
+
+    return visibleHistory;
+};
+
 const normalizeWishlistKey = (value = "") => value.toString().trim().toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)+/g, "");
 
 const stableHash = (value = "") => {
@@ -490,14 +538,7 @@ const deleteSearchHistoryItem = asyncHandler(async (req, res) => {
 
     await SearchHistory.deleteOne({ _id: historyId, user: req.user._id });
 
-    const threeMonthsAgo = new Date();
-    threeMonthsAgo.setMonth(threeMonthsAgo.getMonth() - 3);
-
-    const history = await SearchHistory.find({
-        user: req.user._id,
-        createdAt: { $gte: threeMonthsAgo },
-    })
-        .sort({ searchedAt: -1, createdAt: -1 });
+    const history = await pruneAndLoadSearchHistory(req.user._id);
 
     return res.status(200).json(new APIresponse(200, history, "Search history item deleted successfully"));
 });
@@ -508,36 +549,9 @@ const clearSearchHistory = asyncHandler(async (req, res) => {
 });
 
 const getSearchHistory = asyncHandler(async (req, res) => {
-    const threeMonthsAgo = new Date();
-    threeMonthsAgo.setMonth(threeMonthsAgo.getMonth() - 3);
+    const history = await pruneAndLoadSearchHistory(req.user._id);
 
-    const history = await SearchHistory.find({
-        user: req.user._id,
-        createdAt: { $gte: threeMonthsAgo },
-    })
-        .sort({ searchedAt: -1, createdAt: -1 });
-
-    const dedupedHistory = history.reduce((acc, item) => {
-        const lastItem = acc[acc.length - 1];
-        const currentTime = new Date(item.searchedAt || item.createdAt).getTime();
-        const currentNormalizedQuery = (item.normalizedQuery || item.query || "").toLowerCase().trim();
-
-        if (lastItem) {
-            const lastTime = new Date(lastItem.searchedAt || lastItem.createdAt).getTime();
-            const lastNormalizedQuery = (lastItem.normalizedQuery || lastItem.query || "").toLowerCase().trim();
-            const isSameQuery = currentNormalizedQuery && lastNormalizedQuery && currentNormalizedQuery === lastNormalizedQuery;
-            const isRecentDuplicate = isSameQuery && currentTime - lastTime <= 60 * 1000;
-
-            if (isRecentDuplicate) {
-                return acc;
-            }
-        }
-
-        acc.push(item);
-        return acc;
-    }, []);
-
-    return res.status(200).json(new APIresponse(200, dedupedHistory, "Search history fetched successfully"));
+    return res.status(200).json(new APIresponse(200, history, "Search history fetched successfully"));
 });
 
 
