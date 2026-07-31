@@ -101,7 +101,7 @@ export const removeWishlistItem = createAsyncThunk(
     "wishlist/removeWishlistItem",
     async (productKey, { rejectWithValue }) => {
         try {
-            const response = await api.delete(`/users/wishlist/${encodeURIComponent(normalizeWishlistKey(productKey))}`);
+            const response = await api.delete(`/users/wishlist/${encodeURIComponent((productKey || "").toString().trim())}`);
             return response.data?.data || [];
         } catch (error) {
             return rejectWithValue(error?.response?.data?.message || "Failed to remove wishlist item");

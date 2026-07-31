@@ -466,7 +466,7 @@ const toggleWishlist = asyncHandler(async (req, res) => {
 });
 
 const removeWishlistItem = asyncHandler(async (req, res) => {
-    const productKey = normalizeWishlistKey(req.params.productKey || req.params.productId || req.body?.productKey || req.body?.productId);
+    const productKey = (req.params.productKey || req.params.productId || req.body?.productKey || req.body?.productId || "").toString().trim();
 
     if (!productKey) {
         throw new APIerror(400, "Product key is required");

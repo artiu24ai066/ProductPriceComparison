@@ -141,33 +141,37 @@ const SearchHistory = () => {
 
               </div>
 
-              <div className="history-time">
+              <div className="history-meta">
 
-                <Clock3 size={16}/>
+                <div className="history-time">
 
-                {item.time}
+                  <Clock3 size={16}/>
 
-              </div>
+                  {item.time}
 
-              <div className="history-actions">
+                </div>
 
-              <button
-                className="history-view"
-                onClick={() => navigate(`/search-results?q=${encodeURIComponent(item.product)}`)}
-              >
+                <div className="history-actions">
 
-                <ExternalLink size={18}/>
+                  <button
+                    className="history-view"
+                    onClick={() => navigate(`/search-results?q=${encodeURIComponent(item.product)}`)}
+                  >
 
-              </button>
+                    <ExternalLink size={18}/>
 
-              <button
-                className="history-delete"
-                onClick={() => handleDeleteItem(item.id)}
-              >
+                  </button>
 
-                <Trash2 size={18}/>
+                  <button
+                    className="history-delete"
+                    onClick={() => handleDeleteItem(item.id)}
+                  >
 
-              </button>
+                    <Trash2 size={18}/>
+
+                  </button>
+
+                </div>
 
               </div>
 
