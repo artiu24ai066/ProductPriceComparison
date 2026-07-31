@@ -14,6 +14,18 @@ const searchHistorySchema = new Schema(
             trim: true,
             lowercase: true,
         },
+
+        normalizedQuery: {
+            type: String,
+            required: true,
+            trim: true,
+            lowercase: true,
+        },
+
+        searchedAt: {
+            type: Date,
+            default: Date.now,
+        },
     },
     {
         timestamps: true,
