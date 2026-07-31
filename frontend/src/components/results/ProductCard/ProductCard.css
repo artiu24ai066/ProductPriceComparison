@@ -119,6 +119,18 @@ TOP BUTTONS
 
 }
 
+.wishlist-btn.active{
+
+    background:#ff8a3d;
+
+}
+
+.wishlist-btn.active svg{
+
+    color:white;
+
+}
+
 .wishlist-btn:hover svg{
 
     color:white;

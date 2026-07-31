@@ -43,7 +43,7 @@ const ProductCard = ({ product, onCompare = () => {}, isCompared = false }) => {
 
       <div className="product-image-section">
 
-        <button className="wishlist-btn">
+        <button className="wishlist-btn" type="button">
           <Heart size={18} />
         </button>
 

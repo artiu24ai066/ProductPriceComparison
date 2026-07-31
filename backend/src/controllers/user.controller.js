@@ -1,6 +1,7 @@
 import { asyncHandler } from '../utils/asyncHandler.js';
 import { APIerror } from '../utils/APIerror.js';
 import { User } from '../models/user.model.js';
+import { SearchHistory } from '../models/searchHistory.model.js';
 // import {uploadOnCloudinary} from "../utils/cloudinary.js"
 import { APIresponse } from "../utils/APIresponse.js";
 import jwt from "jsonwebtoken"
@@ -318,6 +319,39 @@ const updateAccountDetails = asyncHandler(async(req, res) => {
     .json(new APIresponse(200, user, "Account details updated successfully"))
 });
 
+const getSearchHistory = asyncHandler(async (req, res) => {
+    const threeMonthsAgo = new Date();
+    threeMonthsAgo.setMonth(threeMonthsAgo.getMonth() - 3);
+
+    const history = await SearchHistory.find({
+        user: req.user._id,
+        createdAt: { $gte: threeMonthsAgo },
+    })
+        .sort({ searchedAt: -1, createdAt: -1 });
+
+    const dedupedHistory = history.reduce((acc, item) => {
+        const lastItem = acc[acc.length - 1];
+        const currentTime = new Date(item.searchedAt || item.createdAt).getTime();
+        const currentNormalizedQuery = (item.normalizedQuery || item.query || "").toLowerCase().trim();
+
+        if (lastItem) {
+            const lastTime = new Date(lastItem.searchedAt || lastItem.createdAt).getTime();
+            const lastNormalizedQuery = (lastItem.normalizedQuery || lastItem.query || "").toLowerCase().trim();
+            const isSameQuery = currentNormalizedQuery && lastNormalizedQuery && currentNormalizedQuery === lastNormalizedQuery;
+            const isRecentDuplicate = isSameQuery && currentTime - lastTime <= 60 * 1000;
+
+            if (isRecentDuplicate) {
+                return acc;
+            }
+        }
+
+        acc.push(item);
+        return acc;
+    }, []);
+
+    return res.status(200).json(new APIresponse(200, dedupedHistory, "Search history fetched successfully"));
+});
+
 
 // const updateUserAvatar = asyncHandler(async(req, res) => {
 //     const avatarLocalPath = req.file?.path
@@ -360,5 +394,6 @@ export {
     changeCurrentPassword,
     getCurrentUser,
     updateAccountDetails,
+    getSearchHistory,
     // updateUserAvatar,
 };

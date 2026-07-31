@@ -7,6 +7,7 @@ import {
     changeCurrentPassword,
     getCurrentUser,
     updateAccountDetails,
+    getSearchHistory,
     // updateUserAvatar
 } from "../controllers/user.controller.js";
 
@@ -24,6 +25,7 @@ router.route("/logout").post(verifyJWT, logoutUser);
 router.route("/change-password").patch(verifyJWT, changeCurrentPassword);
 router.route("/current-user").get(verifyJWT, getCurrentUser);
 router.route("/update-account").patch(verifyJWT, updateAccountDetails);
+router.route("/search-history").get(verifyJWT, getSearchHistory);
 
 // We'll add this later after Multer & Cloudinary
 // router.route("/avatar").patch(
