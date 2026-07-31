@@ -7,6 +7,7 @@ import {
     restoreUser,
     authFinished,
 } from "../../features/auth/authSlice";
+import { clearWishlist, loadWishlist } from "../../features/wishlist/wishlistSlice";
 
 const AuthInitializer = ({ children }) => {
 
@@ -26,8 +27,11 @@ const AuthInitializer = ({ children }) => {
                     })
                 );
 
+                dispatch(loadWishlist());
+
             } catch (error) {
 
+                dispatch(clearWishlist());
                 dispatch(authFinished());
 
             }

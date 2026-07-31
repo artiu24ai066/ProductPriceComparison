@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import "./ProductCard.css";
 
 import {
@@ -9,12 +10,41 @@ import {
   BadgePercent,
 } from "lucide-react";
 
+import useAppDispatch from "../../../hooks/useAppDispatch";
+import useAppSelector from "../../../hooks/useAppSelector";
+import { normalizeWishlistKey, toggleWishlistItem } from "../../../features/wishlist/wishlistSlice";
+
 const ProductCard = ({ product, onCompare = () => {}, isCompared = false }) => {
+  const dispatch = useAppDispatch();
+  const { isAuthenticated } = useAppSelector((state) => state.auth);
+  const { items } = useAppSelector((state) => state.wishlist);
+
   const title = product?.canonicalTitle || product?.brand || "Product";
   const image =
     product?.images?.primary ||
     product?.images?.gallery?.[0] ||
     "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=700";
+
+  const productKey = normalizeWishlistKey(
+    product?.groupId ||
+    product?.canonicalTitle ||
+    product?.slug ||
+    product?.id ||
+    product?._id ||
+    product?.sellers?.[0]?.url ||
+    product?.url ||
+    title
+  );
+
+  const isWishlisted = useMemo(
+    () => items.some((item) => item.productKey === productKey),
+    [items, productKey]
+  );
+
+  const handleWishlistToggle = () => {
+    if (!isAuthenticated || !product) return;
+    dispatch(toggleWishlistItem(product));
+  };
 
   const lowestPrice = product?.priceStats?.lowest;
   const highestPrice = product?.priceStats?.highest;
@@ -43,8 +73,8 @@ const ProductCard = ({ product, onCompare = () => {}, isCompared = false }) => {
 
       <div className="product-image-section">
 
-        <button className="wishlist-btn" type="button">
-          <Heart size={18} />
+        <button className={`wishlist-btn ${isWishlisted ? "active" : ""}`} type="button" onClick={handleWishlistToggle}>
+          <Heart size={18} fill={isWishlisted ? "currentColor" : "none"} />
         </button>
 
         <div className="ai-match">

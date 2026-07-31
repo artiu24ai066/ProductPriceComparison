@@ -10,6 +10,7 @@ import PasswordInput from "../../components/auth/PasswordInput";
 import AuthButton from "../../components/auth/AuthButton";
 
 import { loginSuccess } from "../../features/auth/authSlice";
+import { loadWishlist } from "../../features/wishlist/wishlistSlice";
 
 import useAppDispatch from "../../hooks/useAppDispatch";
 
@@ -60,6 +61,7 @@ const Login = () => {
             storage.setItem("user", JSON.stringify(user));
 
             dispatch(loginSuccess({ user, accessToken }));
+            dispatch(loadWishlist());
 
             navigate("/");
 

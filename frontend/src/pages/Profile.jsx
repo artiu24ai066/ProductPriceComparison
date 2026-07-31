@@ -19,9 +19,9 @@ import api from "../api/axios";
 
 import "../styles/Profile.css";
 
-const Profile = () => {
+const Profile = ({ initialTab = "profile" }) => {
 
-    const [activeTab, setActiveTab] = useState("profile");
+    const [activeTab, setActiveTab] = useState(initialTab);
     const { user } = useAppSelector((state) => state.auth);
     const [profileUser, setProfileUser] = useState(user);
 

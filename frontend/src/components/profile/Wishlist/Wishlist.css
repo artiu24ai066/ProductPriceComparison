@@ -46,6 +46,17 @@
 
 }
 
+.wishlist-empty{
+
+    grid-column:1 / -1;
+    padding:24px;
+    border-radius:18px;
+    background:rgba(255,255,255,.04);
+    color:#AEB7C8;
+    text-align:center;
+
+}
+
 .wishlist-card{
 
     background:#151B25;

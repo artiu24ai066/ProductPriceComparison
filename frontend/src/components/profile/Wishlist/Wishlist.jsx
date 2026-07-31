@@ -1,43 +1,36 @@
+import { useEffect } from "react";
 import "./Wishlist.css";
 import {
   Heart,
   ExternalLink,
   Trash2,
-  ShoppingCart,
   IndianRupee
 } from "lucide-react";
-
-const wishlist = [
-  {
-    id: 1,
-    image:
-      "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=700",
-    name: "iPhone 16 Pro",
-    price: "₹1,12,999",
-    store: "Amazon",
-    status: "Price Stable"
-  },
-  {
-    id: 2,
-    image:
-      "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=700",
-    name: "Samsung S25 Ultra",
-    price: "₹98,999",
-    store: "Flipkart",
-    status: "Dropped ₹2,000"
-  },
-  {
-    id: 3,
-    image:
-      "https://images.unsplash.com/photo-1546868871-7041f2a55e12?w=700",
-    name: "Apple Watch Ultra",
-    price: "₹74,999",
-    store: "Croma",
-    status: "Price Stable"
-  }
-];
+import useAppDispatch from "../../../hooks/useAppDispatch";
+import useAppSelector from "../../../hooks/useAppSelector";
+import { loadWishlist, removeWishlistItem } from "../../../features/wishlist/wishlistSlice";
 
 const Wishlist = () => {
+  const dispatch = useAppDispatch();
+  const { items, loading } = useAppSelector((state) => state.wishlist);
+  const { isAuthenticated } = useAppSelector((state) => state.auth);
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      dispatch(loadWishlist());
+    }
+  }, [dispatch, isAuthenticated]);
+
+  const handleRemove = (productKey) => {
+    if (!productKey) return;
+    dispatch(removeWishlistItem(productKey));
+  };
+
+  const handleView = (sourceUrl) => {
+    if (!sourceUrl) return;
+    window.open(sourceUrl, "_blank", "noopener,noreferrer");
+  };
+
   return (
     <div className="wishlist-section">
 
@@ -48,52 +41,56 @@ const Wishlist = () => {
           <p>Your saved products for future purchases.</p>
         </div>
 
-        <span>{wishlist.length} Products</span>
+        <span>{items.length} Products</span>
 
       </div>
 
       <div className="wishlist-grid">
 
-        {wishlist.map((item) => (
+        {loading && <div className="wishlist-empty">Loading your wishlist...</div>}
+
+        {!loading && items.length === 0 && <div className="wishlist-empty">No wishlist products yet.</div>}
+
+        {!loading && items.map((item) => (
 
           <div
             className="wishlist-card"
-            key={item.id}
+            key={item._id || item.productKey}
           >
 
             <div className="wishlist-image">
 
               <img
-                src={item.image}
-                alt={item.name}
+                src={item.image || "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=700"}
+                alt={item.title}
               />
 
               <button>
-                <Heart size={18}/>
+                <Heart size={18} fill="currentColor"/>
               </button>
 
             </div>
 
             <div className="wishlist-content">
 
-              <h3>{item.name}</h3>
+              <h3>{item.title}</h3>
 
               <div className="wishlist-price">
 
                 <IndianRupee size={16}/>
-                {item.price}
+                {item.priceText || (item.price != null ? `₹${Number(item.price).toLocaleString("en-IN")}` : "Price not available")}
 
               </div>
 
               <div className="wishlist-store">
 
-                {item.store}
+                {item.storeName || "Store"}
 
               </div>
 
               <div className="wishlist-status">
 
-                {item.status}
+                {item.metadata?.rating ? `${item.metadata.rating.toFixed(1)} ★` : "Saved in wishlist"}
 
               </div>
 
@@ -101,7 +98,7 @@ const Wishlist = () => {
 
             <div className="wishlist-actions">
 
-              <button className="view-btn">
+              <button className="view-btn" onClick={() => handleView(item.sourceUrl || item.productSnapshot?.lowestPriceSeller?.url || item.productSnapshot?.sellers?.[0]?.url)}>
 
                 <ExternalLink size={18}/>
 
@@ -109,7 +106,7 @@ const Wishlist = () => {
 
               </button>
 
-              <button className="remove-btn">
+              <button className="remove-btn" onClick={() => handleRemove(item.productKey)}>
 
                 <Trash2 size={18}/>
 

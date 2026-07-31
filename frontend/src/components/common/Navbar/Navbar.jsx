@@ -10,6 +10,7 @@ import "./Navbar.css";
 
 import logo from "../../../assets/logo.png";
 import { logoutSuccess } from "../../../features/auth/authSlice";
+import { clearWishlist } from "../../../features/wishlist/wishlistSlice";
 import useAppSelector from "../../../hooks/useAppSelector";
 import useAppDispatch from "../../../hooks/useAppDispatch";
 
@@ -40,6 +41,7 @@ const Navbar = () => {
             sessionStorage.removeItem("user");
 
             dispatch(logoutSuccess());
+            dispatch(clearWishlist());
 
             navigate("/login", { replace: true });
 
@@ -55,6 +57,7 @@ const Navbar = () => {
             sessionStorage.removeItem("user");
 
             dispatch(logoutSuccess());
+            dispatch(clearWishlist());
 
             navigate("/login", { replace: true });
         }

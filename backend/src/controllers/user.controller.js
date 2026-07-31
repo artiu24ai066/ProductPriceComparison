@@ -2,6 +2,7 @@ import { asyncHandler } from '../utils/asyncHandler.js';
 import { APIerror } from '../utils/APIerror.js';
 import { User } from '../models/user.model.js';
 import { SearchHistory } from '../models/searchHistory.model.js';
+import { Wishlist } from '../models/wishlist.model.js';
 // import {uploadOnCloudinary} from "../utils/cloudinary.js"
 import { APIresponse } from "../utils/APIresponse.js";
 import jwt from "jsonwebtoken"
@@ -319,6 +320,117 @@ const updateAccountDetails = asyncHandler(async(req, res) => {
     .json(new APIresponse(200, user, "Account details updated successfully"))
 });
 
+const normalizeWishlistKey = (value = "") => value.toString().trim().toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)+/g, "");
+
+const formatPriceText = (value) => {
+    if (value === null || value === undefined || Number.isNaN(Number(value))) {
+        return "";
+    }
+
+    return `₹${Number(value).toLocaleString("en-IN")}`;
+};
+
+const buildWishlistSnapshot = (product = {}) => {
+    const productKey = normalizeWishlistKey(
+        product.groupId ||
+        product.canonicalTitle ||
+        product.slug ||
+        product.id ||
+        product._id ||
+        product.sellers?.[0]?.url ||
+        product.url ||
+        product.name ||
+        product.title
+    );
+
+    if (!productKey) {
+        throw new APIerror(400, "Product data is required");
+    }
+
+    const primaryImage = product.images?.primary || product.images?.gallery?.[0] || product.image || "";
+    const bestSeller = product.lowestPriceSeller || product.cheapestAvailableSeller || product.sellers?.[0] || {};
+    const sourceUrl = bestSeller.url || bestSeller.affiliateUrl || product.url || "";
+    const price = product.priceStats?.lowest ?? bestSeller.price ?? product.price ?? null;
+    const title = product.canonicalTitle || product.name || product.title || product.rawTitle || "Product";
+
+    return {
+        productKey,
+        title,
+        brand: product.brand || "",
+        image: primaryImage,
+        price,
+        priceText: formatPriceText(price),
+        storeName: bestSeller.website || bestSeller.sellerName || "",
+        sourceUrl,
+        productSnapshot: product,
+        metadata: {
+            rating: product.overallRating ?? bestSeller.rating ?? null,
+            reviewCount: bestSeller.reviewCount ?? null,
+            availability: product.availability ?? bestSeller.availability ?? null,
+        },
+    };
+};
+
+const mapWishlistItem = (item) => ({
+    _id: item._id,
+    productKey: item.productKey,
+    title: item.title,
+    brand: item.brand,
+    image: item.image,
+    price: item.price,
+    priceText: item.priceText,
+    storeName: item.storeName,
+    sourceUrl: item.sourceUrl,
+    productSnapshot: item.productSnapshot,
+    metadata: item.metadata,
+    createdAt: item.createdAt,
+    updatedAt: item.updatedAt,
+});
+
+const getWishlist = asyncHandler(async (req, res) => {
+    const wishlist = await Wishlist.find({ user: req.user._id }).sort({ createdAt: -1 });
+
+    return res
+        .status(200)
+        .json(new APIresponse(200, wishlist.map(mapWishlistItem), "Wishlist fetched successfully"));
+});
+
+const toggleWishlist = asyncHandler(async (req, res) => {
+    const snapshot = buildWishlistSnapshot(req.body?.product || req.body?.item || req.body);
+    const existing = await Wishlist.findOne({ user: req.user._id, productKey: snapshot.productKey });
+
+    if (existing) {
+        await Wishlist.deleteOne({ _id: existing._id });
+    } else {
+        await Wishlist.create({
+            user: req.user._id,
+            ...snapshot,
+        });
+    }
+
+    const wishlist = await Wishlist.find({ user: req.user._id }).sort({ createdAt: -1 });
+
+    return res
+        .status(200)
+        .json(new APIresponse(200, wishlist.map(mapWishlistItem), "Wishlist updated successfully"));
+});
+
+const removeWishlistItem = asyncHandler(async (req, res) => {
+    const productKey = normalizeWishlistKey(req.params.productKey || req.params.productId || req.body?.productKey || req.body?.productId);
+
+    if (!productKey) {
+        throw new APIerror(400, "Product key is required");
+    }
+
+    await Wishlist.deleteOne({ user: req.user._id, productKey });
+
+    const wishlist = await Wishlist.find({ user: req.user._id }).sort({ createdAt: -1 });
+
+    return res
+        .status(200)
+        .json(new APIresponse(200, wishlist.map(mapWishlistItem), "Wishlist item removed successfully"));
+});
+
 const getSearchHistory = asyncHandler(async (req, res) => {
     const threeMonthsAgo = new Date();
     threeMonthsAgo.setMonth(threeMonthsAgo.getMonth() - 3);
@@ -394,6 +506,9 @@ export {
     changeCurrentPassword,
     getCurrentUser,
     updateAccountDetails,
+    getWishlist,
+    toggleWishlist,
+    removeWishlistItem,
     getSearchHistory,
     // updateUserAvatar,
 };

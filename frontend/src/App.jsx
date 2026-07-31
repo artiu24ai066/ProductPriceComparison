@@ -77,6 +77,15 @@ function App() {
           }
       />
 
+      <Route
+        path="/wishlist"
+        element={
+            <ProtectedRoute>
+              <Profile initialTab="wishlist" />
+            </ProtectedRoute>
+          }
+      />
+
         <Route path="/admin" element={<AdminLayout />}>
 
           <Route
