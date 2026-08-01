@@ -48,8 +48,6 @@
 
 }
 
-/* Slider */
-
 .related-slider{
 
     overflow:hidden;
@@ -64,7 +62,7 @@
 
     width:max-content;
 
-    animation:leftScroll 30s linear infinite;
+    animation:leftScroll 200s linear infinite;
 
 }
 
@@ -74,17 +72,15 @@
 
 }
 
-/* Card */
-
 .mini-card{
 
-    width:185px;
+    width:220px;
 
     background:#171B22;
 
-    border-radius:22px;
+    border-radius:20px;
 
-    padding:18px;
+    overflow:hidden;
 
     border:1px solid rgba(255,255,255,.06);
 
@@ -92,11 +88,13 @@
 
     transition:.35s;
 
+    position:relative;
+
 }
 
 .mini-card:hover{
 
-    transform:translateY(-6px);
+    transform:translateY(-8px);
 
     border-color:#4F8DFF;
 
@@ -106,11 +104,27 @@
 
     width:100%;
 
-    height:150px;
+    height:190px;
 
     object-fit:contain;
 
-    margin-bottom:15px;
+    background:#eef2f7;
+
+    transition:.4s;
+
+}
+
+.mini-card:hover img{
+
+    transform:scale(1.08);
+
+}
+
+.mini-card-body{
+
+    position:relative;
+
+    z-index:2;
 
 }
 
@@ -118,11 +132,13 @@
 
     color:white;
 
-    font-size:15px;
+    font-size:16px;
 
     line-height:1.4;
 
-    margin-bottom:8px;
+    padding:14px 16px 4px;
+
+    margin-bottom:0;
 
 }
 
@@ -130,7 +146,85 @@
 
     color:#ff8a3d;
 
+    font-size:18px;
+
+    font-weight:700;
+
+    padding:0 16px 16px;
+
+}
+
+.mini-card-overlay{
+
+    position:absolute;
+
+    inset:0;
+
+    z-index:3;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    background:rgba(8,12,18,.72);
+
+    opacity:0;
+
+    transition:.35s;
+
+}
+
+.mini-card:hover .mini-card-overlay{
+
+    opacity:1;
+
+}
+
+.mini-card-btn{
+
+    display:inline-flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    border:none;
+
+    border-radius:40px;
+
+    padding:13px 24px;
+
+    background:#4F8DFF;
+
+    color:#fff;
+
+    font-size:13px;
+
     font-weight:600;
+
+    text-decoration:none;
+
+    cursor:pointer;
+
+    transition:.3s;
+
+}
+
+.mini-card-btn:hover{
+
+    background:#ff8a3d;
+
+    transform:translateY(-2px);
+
+}
+
+.mini-card-btn:disabled{
+
+    cursor:not-allowed;
+
+    opacity:.65;
 
 }
 

@@ -50,10 +50,6 @@
 
 }
 
-/* ===========================
-NETFLIX CAROUSEL
-=========================== */
-
 .recent-carousel{
 
     position:relative;
@@ -93,10 +89,6 @@ NETFLIX CAROUSEL
     padding:10px 0;
 
 }
-
-/* ===========================
-ARROWS
-=========================== */
 
 .carousel-arrow{
 
@@ -154,15 +146,11 @@ ARROWS
 
 }
 
-/* ===========================
-CARD
-=========================== */
-
 .recent-card{
 
     position:relative;
 
-    width:200px;
+    width:220px;
 
     flex-shrink:0;
 
@@ -190,7 +178,7 @@ CARD
 
     width:100%;
 
-    height:180px;
+    height:190px;
 
     object-fit:contain;
 
@@ -210,7 +198,7 @@ CARD
 
     color:white;
 
-    padding:16px 16px 6px;
+    padding:14px 16px 4px;
 
     font-size:16px;
 
@@ -226,13 +214,9 @@ CARD
 
     font-weight:700;
 
-    padding:0 16px 18px;
+    padding:0 16px 16px;
 
 }
-
-/* ===========================
-OVERLAY
-=========================== */
 
 .recent-overlay{
 
@@ -274,6 +258,8 @@ OVERLAY
 
     font-weight:600;
 
+    text-decoration:none;
+
     cursor:pointer;
 
     transition:.3s;
@@ -288,9 +274,51 @@ OVERLAY
 
 }
 
-/* ===========================
-RESPONSIVE
-=========================== */
+.recent-empty-state{
+
+    width:100%;
+
+    min-height:220px;
+
+    border-radius:20px;
+
+    border:1px dashed rgba(255,255,255,.12);
+
+    background:rgba(23,27,34,.72);
+
+    display:flex;
+
+    flex-direction:column;
+
+    align-items:center;
+
+    justify-content:center;
+
+    text-align:center;
+
+    padding:32px 24px;
+
+}
+
+.recent-empty-state h3{
+
+    color:#fff;
+
+    font-size:22px;
+
+    margin-bottom:10px;
+
+}
+
+.recent-empty-state p{
+
+    color:#9BA4B5;
+
+    max-width:520px;
+
+    line-height:1.6;
+
+}
 
 @media(max-width:900px){
 
@@ -302,7 +330,7 @@ RESPONSIVE
 
     .recent-card{
 
-        width:180px;
+        width:204px;
 
     }
 

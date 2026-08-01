@@ -3,6 +3,7 @@ import { APIerror } from '../utils/APIerror.js';
 import { User } from '../models/user.model.js';
 import { SearchHistory } from '../models/searchHistory.model.js';
 import { Wishlist } from '../models/wishlist.model.js';
+import { RecentlyViewed } from "../models/recentlyViewed.model.js";
 // import {uploadOnCloudinary} from "../utils/cloudinary.js"
 import { APIresponse } from "../utils/APIresponse.js";
 import jwt from "jsonwebtoken"
@@ -469,6 +470,35 @@ const buildWishlistSnapshot = (product = {}) => {
     };
 };
 
+const buildRecentlyViewedSnapshot = (product = {}) => {
+    const bestSeller = product.lowestPriceSeller || product.cheapestAvailableSeller || product.sellers?.[0] || {};
+    const sourceUrl = bestSeller.url || bestSeller.affiliateUrl || product.url || "";
+    const title = product.canonicalTitle || product.name || product.title || product.rawTitle || "Product";
+    const productKeyBase = [product.groupId, product.canonicalTitle, sourceUrl]
+        .filter(Boolean)
+        .join("::");
+
+    const productKey = `rv_${stableHash(productKeyBase || JSON.stringify(canonicalizeWishlistValue(product) || {}))}`;
+    const price = product.priceStats?.lowest ?? bestSeller.price ?? product.price ?? null;
+
+    return {
+        productKey,
+        title,
+        brand: product.brand || "",
+        image: product.images?.primary || product.images?.gallery?.[0] || product.image || "",
+        price,
+        priceText: formatPriceText(price),
+        storeName: bestSeller.website || bestSeller.sellerName || "",
+        sourceUrl,
+        productSnapshot: product,
+        metadata: {
+            rating: product.overallRating ?? bestSeller.rating ?? null,
+            reviewCount: bestSeller.reviewCount ?? null,
+            availability: product.availability ?? bestSeller.availability ?? null,
+        },
+    };
+};
+
 const mapWishlistItem = (item) => ({
     _id: item._id,
     productKey: item.productKey,
@@ -483,6 +513,91 @@ const mapWishlistItem = (item) => ({
     metadata: item.metadata,
     createdAt: item.createdAt,
     updatedAt: item.updatedAt,
+});
+
+const mapRecentlyViewedItem = (item) => ({
+    _id: item._id,
+    productKey: item.productKey,
+    title: item.title,
+    brand: item.brand,
+    image: item.image,
+    price: item.price,
+    priceText: item.priceText,
+    storeName: item.storeName,
+    sourceUrl: item.sourceUrl,
+    productSnapshot: item.productSnapshot,
+    metadata: item.metadata,
+    viewedAt: item.viewedAt,
+    createdAt: item.createdAt,
+    updatedAt: item.updatedAt,
+});
+
+const syncRecentlyViewedProducts = asyncHandler(async (req, res) => {
+    const products = Array.isArray(req.body?.products)
+        ? req.body.products.filter(Boolean)
+        : req.body?.product
+            ? [req.body.product]
+            : [];
+
+    if (!products.length) {
+        return res.status(200).json(
+            new APIresponse(200, [], "Recently viewed products updated successfully")
+        );
+    }
+
+    const uniqueSnapshots = new Map();
+
+    products.slice(0, 50).forEach((product) => {
+        const snapshot = buildRecentlyViewedSnapshot(product);
+        uniqueSnapshots.set(snapshot.productKey, snapshot);
+    });
+
+    const operations = Array.from(uniqueSnapshots.values()).map((snapshot) => ({
+        updateOne: {
+            filter: {
+                user: req.user._id,
+                productKey: snapshot.productKey,
+            },
+            update: {
+                $set: {
+                    ...snapshot,
+                    viewedAt: new Date(),
+                    user: req.user._id,
+                },
+            },
+            upsert: true,
+        },
+    }));
+
+    if (operations.length) {
+        await RecentlyViewed.bulkWrite(operations, { ordered: false });
+    }
+
+    const recentlyViewed = await RecentlyViewed.find({ user: req.user._id })
+        .sort({ viewedAt: -1, updatedAt: -1 })
+        .limit(50);
+
+    return res.status(200).json(
+        new APIresponse(
+            200,
+            recentlyViewed.map(mapRecentlyViewedItem),
+            "Recently viewed products updated successfully"
+        )
+    );
+});
+
+const getRecentlyViewedProducts = asyncHandler(async (req, res) => {
+    const recentlyViewed = await RecentlyViewed.find({ user: req.user._id })
+        .sort({ viewedAt: -1, updatedAt: -1 })
+        .limit(50);
+
+    return res.status(200).json(
+        new APIresponse(
+            200,
+            recentlyViewed.map(mapRecentlyViewedItem),
+            "Recently viewed products fetched successfully"
+        )
+    );
 });
 
 const getWishlist = asyncHandler(async (req, res) => {
@@ -602,5 +717,7 @@ export {
     deleteSearchHistoryItem,
     clearSearchHistory,
     getSearchHistory,
+    getRecentlyViewedProducts,
+    syncRecentlyViewedProducts,
     // updateUserAvatar,
 };

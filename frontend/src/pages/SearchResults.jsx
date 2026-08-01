@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 import api from "../api/axios";
 
@@ -22,20 +23,15 @@ const getProductKey = (product) =>
 const SearchResults = () => {
     const [searchParams] = useSearchParams();
     const query = searchParams.get("q") || "";
+    const { isAuthenticated, loading: authLoading } = useSelector((state) => state.auth);
 
     const [products, setProducts] = useState([]);
     const [totalStores, setTotalStores] = useState(0);
     const [lastUpdated, setLastUpdated] = useState(null);
     const [loading, setLoading] = useState(false);
     const [comparedProducts, setComparedProducts] = useState([]);
-    const [recentlyViewedProducts, setRecentlyViewedProducts] = useState(() => {
-        if (typeof window === "undefined") return [];
-        try {
-            return JSON.parse(localStorage.getItem("pricewise-recently-viewed") || "[]");
-        } catch {
-            return [];
-        }
-    });
+    const [recentlyViewedProducts, setRecentlyViewedProducts] = useState([]);
+    const [searchHistoryCount, setSearchHistoryCount] = useState(0);
     const [filters, setFilters] = useState({
         price: 100000,
         stores: [],
@@ -55,11 +51,6 @@ const SearchResults = () => {
                 return prev.filter((item) => getProductKey(item) !== productKey);
             }
 
-            setRecentlyViewedProducts((history) => {
-                const filtered = history.filter((item) => getProductKey(item) !== productKey);
-                return [product, ...filtered].slice(0, 8);
-            });
-
             return [...prev, product];
         });
     };
@@ -73,10 +64,37 @@ const SearchResults = () => {
     }, [query]);
 
     useEffect(() => {
-        if (typeof window !== "undefined") {
-            localStorage.setItem("pricewise-recently-viewed", JSON.stringify(recentlyViewedProducts));
+        if (authLoading || !isAuthenticated) {
+            if (!authLoading) {
+                setRecentlyViewedProducts([]);
+                setSearchHistoryCount(0);
+            }
+            return;
         }
-    }, [recentlyViewedProducts]);
+
+        const fetchRecentlyViewed = async () => {
+            try {
+                const response = await api.get("/users/recently-viewed");
+                setRecentlyViewedProducts(response.data.data || []);
+            } catch (error) {
+                console.log(error);
+                setRecentlyViewedProducts([]);
+            }
+        };
+
+        const fetchSearchHistory = async () => {
+            try {
+                const response = await api.get("/users/search-history");
+                setSearchHistoryCount((response.data.data || []).length);
+            } catch (error) {
+                console.log(error);
+                setSearchHistoryCount(0);
+            }
+        };
+
+        fetchRecentlyViewed();
+        fetchSearchHistory();
+    }, [authLoading, isAuthenticated]);
 
     useEffect(() => {
         if (!query) return;
@@ -176,6 +194,27 @@ const SearchResults = () => {
         });
     }, [products, filters]);
 
+    const shuffledRecentlyViewedProducts = useMemo(() => {
+        const items = [...recentlyViewedProducts].filter(Boolean);
+
+        for (let index = items.length - 1; index > 0; index -= 1) {
+            const randomIndex = Math.floor(Math.random() * (index + 1));
+            [items[index], items[randomIndex]] = [items[randomIndex], items[index]];
+        }
+
+        return items.slice(0, 50);
+    }, [recentlyViewedProducts]);
+
+    const recentlyViewedTitle = searchHistoryCount > 0
+        ? "Open a product to fill Recently Viewed"
+        : "Search products to build your history";
+
+    const recentlyViewedDescription = searchHistoryCount > 0
+        ? "You have searched before. Open any result page and we will save it here automatically."
+        : "Search a product first. Once you open products from the results, they will appear here.";
+
+    const shouldShowRecentlyViewed = isAuthenticated || shuffledRecentlyViewedProducts.length > 0;
+
     return (
         <>
             <Navbar />
@@ -240,9 +279,15 @@ const SearchResults = () => {
                 <PriceHistory key={query || "results"} products={comparedProducts} onReset={handleClearComparison} />
                 <AIRecommendation />
 
-                <RelatedProducts products={filteredProducts.slice(0, 6)} />
+                <RelatedProducts products={products} />
 
-                <RecentlyViewed products={recentlyViewedProducts} />
+                {shouldShowRecentlyViewed && (
+                    <RecentlyViewed
+                        products={shuffledRecentlyViewedProducts}
+                        emptyTitle={recentlyViewedTitle}
+                        emptyDescription={recentlyViewedDescription}
+                    />
+                )}
 
             </main>
 

@@ -13,6 +13,8 @@ import {
     deleteSearchHistoryItem,
     clearSearchHistory,
     getSearchHistory,
+    getRecentlyViewedProducts,
+    syncRecentlyViewedProducts,
     // updateUserAvatar
 } from "../controllers/user.controller.js";
 
@@ -36,6 +38,8 @@ router.route("/wishlist/:productKey").delete(verifyJWT, removeWishlistItem);
 router.route("/search-history").get(verifyJWT, getSearchHistory);
 router.route("/search-history/:historyId").delete(verifyJWT, deleteSearchHistoryItem);
 router.route("/search-history").delete(verifyJWT, clearSearchHistory);
+router.route("/recently-viewed").get(verifyJWT, getRecentlyViewedProducts);
+router.route("/recently-viewed").post(verifyJWT, syncRecentlyViewedProducts);
 
 // We'll add this later after Multer & Cloudinary
 // router.route("/avatar").patch(

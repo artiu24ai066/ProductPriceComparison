@@ -8,10 +8,62 @@ const recentlyViewedSchema = new Schema(
             required: true,
         },
 
-        product: {
-            type: Schema.Types.ObjectId,
-            ref: "Product",
+        productKey: {
+            type: String,
             required: true,
+            trim: true,
+            lowercase: true,
+        },
+
+        title: {
+            type: String,
+            required: true,
+            trim: true,
+        },
+
+        brand: {
+            type: String,
+            default: "",
+            trim: true,
+        },
+
+        image: {
+            type: String,
+            default: "",
+            trim: true,
+        },
+
+        price: {
+            type: Number,
+            default: null,
+        },
+
+        priceText: {
+            type: String,
+            default: "",
+            trim: true,
+        },
+
+        storeName: {
+            type: String,
+            default: "",
+            trim: true,
+        },
+
+        sourceUrl: {
+            type: String,
+            default: "",
+            trim: true,
+        },
+
+        productSnapshot: {
+            type: Schema.Types.Mixed,
+            required: true,
+        },
+
+        metadata: {
+            type: Schema.Types.Mixed,
+            default: {},
         },
 
         viewedAt: {
@@ -24,10 +76,7 @@ const recentlyViewedSchema = new Schema(
     }
 );
 
-recentlyViewedSchema.index(
-    { user: 1, product: 1 },
-    { unique: true }
-);
+recentlyViewedSchema.index({ user: 1, productKey: 1 }, { unique: true });
 
 export const RecentlyViewed = mongoose.model(
     "RecentlyViewed",

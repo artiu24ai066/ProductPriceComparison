@@ -2,62 +2,11 @@ import "./RecentlyViewed.css";
 import { useRef } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
-const fallbackProducts = [
-  {
-    id: 1,
-    name: "iPhone 18 Pro",
-    price: "₹1,08,999",
-    image:
-      "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=600",
-  },
-  {
-    id: 2,
-    name: "Pixel 10 Pro",
-    price: "₹89,999",
-    image:
-      "https://images.unsplash.com/photo-1598327105666-5b89351aff97?w=600",
-  },
-  {
-    id: 3,
-    name: "Galaxy S29 Ultra",
-    price: "₹99,999",
-    image:
-      "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=600",
-  },
-  {
-    id: 4,
-    name: "Nothing Phone 3",
-    price: "₹49,999",
-    image:
-      "https://images.unsplash.com/photo-1580910051074-3eb694886505?w=600",
-  },
-  {
-    id: 5,
-    name: "OnePlus 14",
-    price: "₹64,999",
-    image:
-      "https://images.unsplash.com/photo-1567581935884-3349723552ca?w=600",
-  },
-  {
-    id: 6,
-    name: "Motorola Edge Ultra",
-    price: "₹58,999",
-    image:
-      "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=600",
-  },
-  {
-    id: 7,
-    name: "Xiaomi 18 Ultra",
-    price: "₹72,999",
-    image:
-      "https://images.unsplash.com/photo-1580910051074-3eb694886505?w=600",
-  },
-];
-
-const RecentlyViewed = ({ products = [] }) => {
+const RecentlyViewed = ({ products = [], emptyTitle = "Search products to populate this section", emptyDescription = "Once you open products from search results, they will appear here." }) => {
   const sliderRef = useRef(null);
 
   const scrollLeft = () => {
+    if (!sliderRef.current) return;
     sliderRef.current.scrollBy({
       left: -700,
       behavior: "smooth",
@@ -65,13 +14,14 @@ const RecentlyViewed = ({ products = [] }) => {
   };
 
   const scrollRight = () => {
+    if (!sliderRef.current) return;
     sliderRef.current.scrollBy({
       left: 700,
       behavior: "smooth",
     });
   };
 
-  const items = products.length ? products.slice(0, 8) : fallbackProducts;
+  const items = products.slice(0, 50);
 
   return (
     <section className="recent-section">
@@ -84,53 +34,66 @@ const RecentlyViewed = ({ products = [] }) => {
       </div>
 
       <div className="recent-carousel">
-        <button
-          className="carousel-arrow left"
-          onClick={scrollLeft}
-        >
-          <ChevronLeft size={28} />
-        </button>
+        {items.length > 0 && (
+          <button
+            className="carousel-arrow left"
+            onClick={scrollLeft}
+          >
+            <ChevronLeft size={28} />
+          </button>
+        )}
 
-        <div
-          className="recent-slider"
-          ref={sliderRef}
-        >
-          <div className="recent-track">
-            {items.map((item, index) => {
-              const title = item?.canonicalTitle || item?.brand || item?.name || "Product";
-              const image = item?.images?.primary || item?.images?.gallery?.[0] || item?.image || fallbackProducts[index % fallbackProducts.length].image;
-              const price = item?.priceStats?.lowest != null
-                ? `₹${Number(item.priceStats.lowest).toLocaleString("en-IN")}`
-                : item?.price || fallbackProducts[index % fallbackProducts.length].price;
+        {items.length ? (
+          <div
+            className="recent-slider"
+            ref={sliderRef}
+          >
+            <div className="recent-track">
+              {items.map((item, index) => {
+                const title = item?.title || item?.canonicalTitle || item?.brand || item?.name || "Product";
+                const image = item?.image || item?.images?.primary || item?.images?.gallery?.[0] || "";
+                const price = item?.priceText || (item?.price != null ? `₹${Number(item.price).toLocaleString("en-IN")}` : "");
+                const sourceUrl = item?.sourceUrl || item?.productSnapshot?.lowestPriceSeller?.url || item?.productSnapshot?.cheapestAvailableSeller?.url || item?.productSnapshot?.sellers?.[0]?.url || item?.productSnapshot?.url || "";
 
-              return (
-                <div className="recent-card" key={item?.id || item?.groupId || `${title}-${index}`}>
-                  <img className="recent-image"
-                    src={image}
-                    alt={title}
-                  />
+                return (
+                  <div className="recent-card" key={item?._id || item?.productKey || item?.id || `${title}-${index}`}>
+                    <img className="recent-image" src={image} alt={title} />
 
-                  <div className="recent-overlay">
-                    <button className="recent-overlay-btn">
-                      Explore Again
-                    </button>
+                    <div className="recent-overlay">
+                      {sourceUrl ? (
+                        <a className="recent-overlay-btn" href={sourceUrl} target="_blank" rel="noopener noreferrer">
+                          Explore Again
+                        </a>
+                      ) : (
+                        <button className="recent-overlay-btn" type="button" disabled>
+                          Explore Again
+                        </button>
+                      )}
+                    </div>
+
+                    <h4>{title}</h4>
+
+                    <p>{price}</p>
                   </div>
-
-                  <h4>{title}</h4>
-
-                  <p>{price}</p>
-                </div>
-              );
-            })}
+                );
+              })}
+            </div>
           </div>
-        </div>
+        ) : (
+          <div className="recent-empty-state">
+            <h3>{emptyTitle}</h3>
+            <p>{emptyDescription}</p>
+          </div>
+        )}
 
-        <button
-          className="carousel-arrow right"
-          onClick={scrollRight}
-        >
-          <ChevronRight size={28} />
-        </button>
+        {items.length > 0 && (
+          <button
+            className="carousel-arrow right"
+            onClick={scrollRight}
+          >
+            <ChevronRight size={28} />
+          </button>
+        )}
       </div>
     </section>
   );
