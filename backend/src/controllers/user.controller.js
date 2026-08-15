@@ -5,6 +5,7 @@ import { SearchHistory } from '../models/searchHistory.model.js';
 import { Wishlist } from '../models/wishlist.model.js';
 import { RecentlyViewed } from "../models/recentlyViewed.model.js";
 // import {uploadOnCloudinary} from "../utils/cloudinary.js"
+import { uploadToCloudinary } from "../utils/cloudinary.js"
 import { APIresponse } from "../utils/APIresponse.js";
 import jwt from "jsonwebtoken"
 import mongoose from "mongoose";
@@ -677,6 +678,50 @@ const getSearchHistory = asyncHandler(async (req, res) => {
 });
 
 
+const updateUserAvatar = asyncHandler(async (req, res) => {
+    if (!req.file) {
+        throw new APIerror(400, "Image file is required.");
+    }
+
+    // Build a stable public_id so re-uploads overwrite the same Cloudinary asset
+    // rather than creating a new one each time.
+    const publicId = `avatars/user_${req.user._id}`;
+
+    let cloudinaryResult;
+    try {
+        cloudinaryResult = await uploadToCloudinary(req.file.buffer, "pricewise/avatars", publicId);
+    } catch {
+        throw new APIerror(500, "Failed to upload image. Please try again.");
+    }
+
+    if (!cloudinaryResult?.secure_url) {
+        throw new APIerror(500, "Image upload succeeded but no URL was returned.");
+    }
+
+    const user = await User.findByIdAndUpdate(
+        req.user._id,
+        { $set: { avatar: cloudinaryResult.secure_url } },
+        { new: true }
+    ).select("-password -refreshToken");
+
+    return res
+        .status(200)
+        .json(new APIresponse(200, user, "Profile picture updated successfully."));
+});
+
+const removeUserAvatar = asyncHandler(async (req, res) => {
+    const user = await User.findByIdAndUpdate(
+        req.user._id,
+        { $set: { avatar: "" } },
+        { new: true }
+    ).select("-password -refreshToken");
+
+    return res
+        .status(200)
+        .json(new APIresponse(200, user, "Profile picture removed successfully."));
+});
+
+
 // const updateUserAvatar = asyncHandler(async(req, res) => {
 //     const avatarLocalPath = req.file?.path
 
@@ -718,6 +763,8 @@ export {
     changeCurrentPassword,
     getCurrentUser,
     updateAccountDetails,
+    updateUserAvatar,
+    removeUserAvatar,
     getWishlist,
     toggleWishlist,
     removeWishlistItem,
@@ -726,5 +773,4 @@ export {
     getSearchHistory,
     getRecentlyViewedProducts,
     syncRecentlyViewedProducts,
-    // updateUserAvatar,
 };

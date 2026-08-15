@@ -7,6 +7,8 @@ import {
     changeCurrentPassword,
     getCurrentUser,
     updateAccountDetails,
+    updateUserAvatar,
+    removeUserAvatar,
     getWishlist,
     toggleWishlist,
     removeWishlistItem,
@@ -15,10 +17,10 @@ import {
     getSearchHistory,
     getRecentlyViewedProducts,
     syncRecentlyViewedProducts,
-    // updateUserAvatar
 } from "../controllers/user.controller.js";
 
 import { verifyJWT } from "../middlewares/auth.middleware.js";
+import { upload }    from "../middlewares/multer.middleware.js";
 
 const router = Router();
 
@@ -32,6 +34,8 @@ router.route("/logout").post(verifyJWT, logoutUser);
 router.route("/change-password").patch(verifyJWT, changeCurrentPassword);
 router.route("/current-user").get(verifyJWT, getCurrentUser);
 router.route("/update-account").patch(verifyJWT, updateAccountDetails);
+router.route("/avatar").patch(verifyJWT, upload.single("avatar"), updateUserAvatar);
+router.route("/avatar").delete(verifyJWT, removeUserAvatar);
 router.route("/wishlist").get(verifyJWT, getWishlist);
 router.route("/wishlist/toggle").post(verifyJWT, toggleWishlist);
 router.route("/wishlist/:productKey").delete(verifyJWT, removeWishlistItem);
@@ -40,12 +44,5 @@ router.route("/search-history/:historyId").delete(verifyJWT, deleteSearchHistory
 router.route("/search-history").delete(verifyJWT, clearSearchHistory);
 router.route("/recently-viewed").get(verifyJWT, getRecentlyViewedProducts);
 router.route("/recently-viewed").post(verifyJWT, syncRecentlyViewedProducts);
-
-// We'll add this later after Multer & Cloudinary
-// router.route("/avatar").patch(
-//     verifyJWT,
-//     upload.single("avatar"),
-//     updateUserAvatar
-// );
 
 export default router;
