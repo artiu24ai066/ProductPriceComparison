@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Navbar from "../components/common/Navbar/Navbar.jsx"
 import Footer from "../components/common/Footer/Footer.jsx"
 import ProfileBanner from "../components/profile/ProfileBanner/ProfileBanner";
@@ -25,6 +25,9 @@ const Profile = ({ initialTab = "profile" }) => {
     const { user } = useAppSelector((state) => state.auth);
     const [profileUser, setProfileUser] = useState(user);
 
+    // Ref attached to the PersonalInfo section — used for smooth scroll
+    const personalInfoRef = useRef(null);
+
     useEffect(() => {
         if (user) {
             setProfileUser(user);
@@ -43,12 +46,30 @@ const Profile = ({ initialTab = "profile" }) => {
         fetchProfile();
     }, [user]);
 
+    // Called by ProfileBanner's "Edit Profile" button
+    const handleEditProfile = () => {
+        // Switch to the profile tab first (in case another tab is active)
+        setActiveTab("profile");
+
+        // Wait one tick for the tab content to render, then scroll
+        setTimeout(() => {
+            personalInfoRef.current?.scrollIntoView({
+                behavior: "smooth",
+                block: "start",
+            });
+        }, 50);
+    };
+
     return (
 
         <>
 
             <Navbar />
-            <ProfileBanner user={profileUser} />
+
+            <ProfileBanner
+                user={profileUser}
+                onEditProfile={handleEditProfile}
+            />
 
             <section className="profile-dashboard">
 
@@ -61,7 +82,12 @@ const Profile = ({ initialTab = "profile" }) => {
 
                     <div className="profile-right">
 
-                        {activeTab === "profile" && <PersonalInfo user={profileUser} />}
+                        {activeTab === "profile" && (
+                            <PersonalInfo
+                                user={profileUser}
+                                sectionRef={personalInfoRef}
+                            />
+                        )}
 
                         {activeTab === "wishlist" && <Wishlist />}
 

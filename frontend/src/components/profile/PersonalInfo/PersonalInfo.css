@@ -176,3 +176,45 @@
 }
 
 }
+
+.readonly-badge{
+    margin-left:8px;
+    font-size:11px;
+    font-weight:500;
+    color:#9BA4B5;
+    background:rgba(255,255,255,.07);
+    padding:2px 8px;
+    border-radius:20px;
+    vertical-align:middle;
+}
+
+.profile-input--readonly{
+    opacity:.6;
+    cursor:not-allowed;
+}
+
+.profile-input--readonly input{
+    cursor:not-allowed;
+}
+
+.save-message{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    padding:14px 20px;
+    border-radius:14px;
+    font-size:14px;
+    font-weight:500;
+}
+
+.save-message--success{
+    background:rgba(34,197,94,.12);
+    color:#4ade80;
+    border:1px solid rgba(34,197,94,.25);
+}
+
+.save-message--error{
+    background:rgba(239,68,68,.12);
+    color:#f87171;
+    border:1px solid rgba(239,68,68,.25);
+}

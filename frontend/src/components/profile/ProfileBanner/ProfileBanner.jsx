@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import "./ProfileBanner.css";
 import {
   Camera,
@@ -6,8 +7,26 @@ import {
   MapPin,
   Pencil,
 } from "lucide-react";
+import useAppSelector from "../../../hooks/useAppSelector";
+import api from "../../../api/axios";
 
-const ProfileBanner = ({ user }) => {
+const ProfileBanner = ({ user, onEditProfile }) => {
+
+  const wishlistCount = useAppSelector((state) => state.wishlist.items.length);
+  const [searchCount, setSearchCount] = useState(0);
+
+  useEffect(() => {
+    const fetchSearchCount = async () => {
+      try {
+        const response = await api.get("/users/search-history");
+        setSearchCount((response.data?.data || []).length);
+      } catch {
+        // silently ignore — count stays 0
+      }
+    };
+    fetchSearchCount();
+  }, []);
+
   return (
     <section className="profile-banner">
 
@@ -64,7 +83,7 @@ const ProfileBanner = ({ user }) => {
 
         </div>
 
-        <button className="edit-profile-btn">
+        <button className="edit-profile-btn" onClick={onEditProfile}>
           <Pencil size={18} />
           Edit Profile
         </button>
@@ -74,12 +93,12 @@ const ProfileBanner = ({ user }) => {
       <div className="profile-stats">
 
         <div className="stat-box">
-          <h2>42</h2>
+          <h2>{wishlistCount}</h2>
           <span>Wishlist</span>
         </div>
 
         <div className="stat-box">
-          <h2>168</h2>
+          <h2>{searchCount}</h2>
           <span>Searches</span>
         </div>
 

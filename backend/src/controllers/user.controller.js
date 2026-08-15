@@ -298,27 +298,26 @@ const getCurrentUser = asyncHandler(async(req, res) => {
 
 
 const updateAccountDetails = asyncHandler(async(req, res) => {
-    const {fullname, email} = req.body
+    const { fullname, username } = req.body;
 
-    if (!fullname || !email) {
-        throw new APIerror(400, "All fields are required")
+    if (!fullname?.trim()) {
+        throw new APIerror(400, "Full name is required");
     }
 
     const user = await User.findByIdAndUpdate(
         req.user?._id,
         {
             $set: {
-                fullname,
-                email: email
+                fullname: fullname.trim(),
+                ...(username !== undefined && { username: username.trim() }),
             }
         },
-        {new: true}
-        
-    ).select("-password")
+        { new: true }
+    ).select("-password -refreshToken");
 
     return res
-    .status(200)
-    .json(new APIresponse(200, user, "Account details updated successfully"))
+        .status(200)
+        .json(new APIresponse(200, user, "Account details updated successfully"));
 });
 
 const SEARCH_HISTORY_RETENTION_MONTHS = 6;
