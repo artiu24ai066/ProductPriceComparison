@@ -298,20 +298,28 @@ const getCurrentUser = asyncHandler(async(req, res) => {
 
 
 const updateAccountDetails = asyncHandler(async(req, res) => {
-    const { fullname, username } = req.body;
+    const { fullname, username, address } = req.body;
 
     if (!fullname?.trim()) {
         throw new APIerror(400, "Full name is required");
     }
 
+    const updateFields = {
+        fullname: fullname.trim(),
+        ...(username !== undefined && { username: username.trim() }),
+    };
+
+    // Only update address fields that are explicitly provided
+    if (address && typeof address === "object") {
+        if (address.country !== undefined) updateFields["address.country"] = address.country.trim();
+        if (address.state   !== undefined) updateFields["address.state"]   = address.state.trim();
+        if (address.city    !== undefined) updateFields["address.city"]    = address.city.trim();
+        if (address.pincode !== undefined) updateFields["address.pincode"] = address.pincode.trim();
+    }
+
     const user = await User.findByIdAndUpdate(
         req.user?._id,
-        {
-            $set: {
-                fullname: fullname.trim(),
-                ...(username !== undefined && { username: username.trim() }),
-            }
-        },
+        { $set: updateFields },
         { new: true }
     ).select("-password -refreshToken");
 
