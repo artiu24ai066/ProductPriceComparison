@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Mail } from "lucide-react";
+import { Mail, CheckCircle2, XCircle } from "lucide-react";
 
 import api from "../../api/axios";
 
@@ -9,72 +9,80 @@ import AuthInput from "../../components/auth/AuthInput";
 import AuthButton from "../../components/auth/AuthButton";
 
 const ForgotPassword = () => {
-  const [email, setEmail] = useState("");
-  const [loading, setLoading] = useState(false);
+    const [email,   setEmail]   = useState("");
+    const [loading, setLoading] = useState(false);
+    const [message, setMessage] = useState(null); // { type: "success"|"error", text }
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+    const handleSubmit = async (e) => {
+        e.preventDefault();
 
-    if (!email.trim()) {
-      alert("Please enter your email.");
-      return;
-    }
+        if (!email.trim()) {
+            setMessage({ type: "error", text: "Please enter your email address." });
+            return;
+        }
 
-    try {
-      setLoading(true);
+        setLoading(true);
+        setMessage(null);
 
-      const response = await api.post("/auth/forgot-password", {
-        email,
-      });
+        try {
+            const response = await api.post("/users/forgot-password", { email });
 
-      alert(
-        response.data.message ||
-        "Password reset link sent successfully."
-      );
+            setMessage({
+                type: "success",
+                text: response.data.message ||
+                    "If an account with that email exists, a reset link has been sent.",
+            });
 
-      setEmail("");
+            setEmail("");
 
-    } catch (error) {
-      alert(
-        error.response?.data?.message ||
-        "Unable to send reset link."
-      );
-    } finally {
-      setLoading(false);
-    }
-  };
+        } catch (error) {
+            setMessage({
+                type: "error",
+                text: error.response?.data?.message || "Something went wrong. Please try again.",
+            });
+        } finally {
+            setLoading(false);
+        }
+    };
 
-  return (
-    <AuthLayout
-      title="Forgot Password"
-      subtitle="Enter your email to receive a password reset link."
-    >
-      <form onSubmit={handleSubmit} className="auth-form">
+    return (
+        <AuthLayout
+            title="Forgot Password"
+            subtitle="Enter your email to receive a password reset link."
+        >
+            <form onSubmit={handleSubmit} className="auth-form">
 
-        <AuthInput
-          icon={Mail}
-          type="email"
-          name="email"
-          placeholder="Email Address"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
+                <AuthInput
+                    icon={Mail}
+                    type="email"
+                    name="email"
+                    placeholder="Email Address"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                />
 
-        <AuthButton
-          text="Send Reset Link"
-          loading={loading}
-        />
+                {message && (
+                    <div className={`auth-message auth-message--${message.type}`}>
+                        {message.type === "success"
+                            ? <CheckCircle2 size={16} />
+                            : <XCircle size={16} />}
+                        {message.text}
+                    </div>
+                )}
 
-      </form>
+                <AuthButton
+                    text="Send Reset Link"
+                    loading={loading}
+                />
 
-      <div className="auth-footer">
-        <Link to="/login">
-          Back to Login
-        </Link>
-      </div>
+            </form>
 
-    </AuthLayout>
-  );
+            <div className="auth-footer">
+                <Link to="/login">Back to Login</Link>
+            </div>
+
+        </AuthLayout>
+    );
 };
 
 export default ForgotPassword;

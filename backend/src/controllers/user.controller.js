@@ -1,14 +1,17 @@
 import { asyncHandler } from '../utils/asyncHandler.js';
 import { APIerror } from '../utils/APIerror.js';
 import { User } from '../models/user.model.js';
+import { PasswordResetToken } from '../models/passwordResetToken.model.js';
 import { SearchHistory } from '../models/searchHistory.model.js';
 import { Wishlist } from '../models/wishlist.model.js';
 import { RecentlyViewed } from "../models/recentlyViewed.model.js";
 // import {uploadOnCloudinary} from "../utils/cloudinary.js"
 import { uploadToCloudinary } from "../utils/cloudinary.js"
+import { sendPasswordResetEmail } from "../utils/email.js";
 import { APIresponse } from "../utils/APIresponse.js";
 import jwt from "jsonwebtoken"
 import mongoose from "mongoose";
+import crypto from "crypto";
 
 const generateAccessAndRefereshTokens = async(userId) => {
     try {
@@ -221,6 +224,110 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
     }
 });
 
+
+// ─── forgotPassword ────────────────────────────────────────────────────────
+
+const forgotPassword = asyncHandler(async (req, res) => {
+    const { email } = req.body;
+
+    if (!email?.trim()) {
+        throw new APIerror(400, "Email is required");
+    }
+
+    const user = await User.findOne({ email: email.toLowerCase().trim() });
+
+    // Always respond with the same message regardless of whether email exists
+    // to prevent user enumeration attacks
+    const genericMessage = "If an account with that email exists, a reset link has been sent.";
+
+    if (!user) {
+        return res.status(200).json(new APIresponse(200, {}, genericMessage));
+    }
+
+    // Delete any existing unused tokens for this user
+    await PasswordResetToken.deleteMany({ user: user._id });
+
+    // Generate a cryptographically secure random token
+    const rawToken  = crypto.randomBytes(32).toString("hex");
+    const tokenHash = crypto.createHash("sha256").update(rawToken).digest("hex");
+
+    const expiryMs = Number(process.env.RESET_TOKEN_EXPIRY_MS) || 3_600_000; // 1 hour default
+
+    await PasswordResetToken.create({
+        user:      user._id,
+        tokenHash,
+        expiresAt: new Date(Date.now() + expiryMs),
+    });
+
+    const resetUrl = `${process.env.FRONTEND_URL}/reset-password/${rawToken}`;
+    const expiryMinutes = Math.round(expiryMs / 60_000);
+
+    try {
+        await sendPasswordResetEmail(user.email, user.fullname, resetUrl, expiryMinutes);
+    } catch (err) {
+        // Clean up token so the user can try again
+        await PasswordResetToken.deleteMany({ user: user._id });
+        console.error("Email send failed:", err.message);
+        throw new APIerror(500, "Failed to send reset email. Please try again.");
+    }
+
+    return res.status(200).json(new APIresponse(200, {}, genericMessage));
+});
+
+// ─── resetPassword ─────────────────────────────────────────────────────────
+
+const resetPassword = asyncHandler(async (req, res) => {
+    const { token }    = req.params;
+    const { password } = req.body;
+
+    if (!token?.trim()) {
+        throw new APIerror(400, "Reset token is required");
+    }
+
+    if (!password || password.length < 8) {
+        throw new APIerror(400, "Password must be at least 8 characters");
+    }
+
+    const tokenHash = crypto.createHash("sha256").update(token.trim()).digest("hex");
+
+    const resetDoc = await PasswordResetToken.findOne({ tokenHash });
+
+    if (!resetDoc) {
+        throw new APIerror(400, "Invalid or expired reset link. Please request a new one.");
+    }
+
+    if (resetDoc.used) {
+        throw new APIerror(400, "This reset link has already been used. Please request a new one.");
+    }
+
+    if (new Date() > resetDoc.expiresAt) {
+        await PasswordResetToken.deleteOne({ _id: resetDoc._id });
+        throw new APIerror(400, "This reset link has expired. Please request a new one.");
+    }
+
+    const user = await User.findById(resetDoc.user);
+    if (!user) {
+        throw new APIerror(404, "User not found");
+    }
+
+    // Update password — the pre-save hook will hash it
+    user.password = password;
+    await user.save({ validateBeforeSave: false });
+
+    // Invalidate the token so it cannot be reused
+    await PasswordResetToken.deleteOne({ _id: resetDoc._id });
+
+    // Also invalidate all active sessions by clearing the refresh token
+    user.refreshToken = undefined;
+    await user.save({ validateBeforeSave: false });
+
+    return res.status(200).json(
+        new APIresponse(200, {}, "Password reset successfully. You can now log in.")
+    );
+});
+
+
+// ─── changeCurrentPassword ─────────────────────────────────────────────────
 
 const changeCurrentPassword = asyncHandler(async (req, res) => {
     const { oldPassword, newPassword } = req.body
@@ -718,6 +825,8 @@ export {
     loginUser,
     logoutUser,
     refreshAccessToken,
+    forgotPassword,
+    resetPassword,
     changeCurrentPassword,
     getCurrentUser,
     updateAccountDetails,

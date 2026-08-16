@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { CheckCircle2, XCircle } from "lucide-react";
 
 import api from "../../api/axios";
@@ -10,16 +10,16 @@ import AuthButton from "../../components/auth/AuthButton";
 
 const MIN_PASSWORD_LENGTH = 8;
 
-const ResetPassword = () => {
-    const navigate    = useNavigate();
-    const { token }   = useParams();
+const ChangePassword = () => {
+    const navigate = useNavigate();
 
     const [loading, setLoading] = useState(false);
     const [success, setSuccess] = useState(false);
     const [message, setMessage] = useState(null); // { type: "success"|"error", text }
 
     const [formData, setFormData] = useState({
-        password:        "",
+        oldPassword:     "",
+        newPassword:     "",
         confirmPassword: "",
     });
 
@@ -31,30 +31,30 @@ const ResetPassword = () => {
         e.preventDefault();
         setMessage(null);
 
-        const { password, confirmPassword } = formData;
+        const { oldPassword, newPassword, confirmPassword } = formData;
 
-        if (!password || !confirmPassword) {
-            setMessage({ type: "error", text: "Please fill in both fields." });
+        if (!oldPassword || !newPassword || !confirmPassword) {
+            setMessage({ type: "error", text: "Please fill in all fields." });
             return;
         }
 
-        if (password.length < MIN_PASSWORD_LENGTH) {
+        if (newPassword.length < MIN_PASSWORD_LENGTH) {
             setMessage({
                 type: "error",
-                text: `Password must be at least ${MIN_PASSWORD_LENGTH} characters.`,
+                text: `New password must be at least ${MIN_PASSWORD_LENGTH} characters.`,
             });
             return;
         }
 
-        if (password !== confirmPassword) {
-            setMessage({ type: "error", text: "Passwords do not match." });
+        if (newPassword !== confirmPassword) {
+            setMessage({ type: "error", text: "New passwords do not match." });
             return;
         }
 
-        if (!token) {
+        if (oldPassword === newPassword) {
             setMessage({
                 type: "error",
-                text: "Reset token is missing. Please request a new reset link.",
+                text: "New password must be different from your current password.",
             });
             return;
         }
@@ -62,24 +62,27 @@ const ResetPassword = () => {
         setLoading(true);
 
         try {
-            const response = await api.post(`/users/reset-password/${token}`, {
-                password,
+            const response = await api.patch("/users/change-password", {
+                oldPassword,
+                newPassword,
             });
 
             setSuccess(true);
             setMessage({
                 type: "success",
-                text: response.data.message || "Password reset successfully!",
+                text: response.data.message || "Password changed successfully!",
             });
 
-            // Redirect to login after 2.5 seconds
-            setTimeout(() => navigate("/login"), 2500);
+            setFormData({ oldPassword: "", newPassword: "", confirmPassword: "" });
+
+            // Redirect to profile settings after 2 seconds
+            setTimeout(() => navigate("/profile"), 2000);
 
         } catch (error) {
             setMessage({
                 type: "error",
                 text: error.response?.data?.message ||
-                    "Failed to reset password. Please request a new reset link.",
+                    "Failed to change password. Please try again.",
             });
         } finally {
             setLoading(false);
@@ -88,31 +91,36 @@ const ResetPassword = () => {
 
     return (
         <AuthLayout
-            title="Reset Password"
-            subtitle="Create a new secure password for your account."
+            title="Change Password"
+            subtitle="Update your account password to keep it secure."
         >
             {success ? (
 
-                // ── Success state ─────────────────────────────────────
                 <div className="auth-form">
                     <div className="auth-message auth-message--success">
                         <CheckCircle2 size={16} />
                         {message?.text}
                     </div>
-                    <p style={{ color: "#A7B0BF", fontSize: "14px", textAlign: "center" }}>
-                        Redirecting you to the login page…
+                    <p style={{ color: "#9BA4B5", fontSize: "14px", textAlign: "center" }}>
+                        Redirecting you back to your profile…
                     </p>
                 </div>
 
             ) : (
 
-                // ── Form ──────────────────────────────────────────────
                 <form onSubmit={handleSubmit} className="auth-form">
 
                     <PasswordInput
-                        name="password"
+                        name="oldPassword"
+                        placeholder="Current Password"
+                        value={formData.oldPassword}
+                        onChange={handleChange}
+                    />
+
+                    <PasswordInput
+                        name="newPassword"
                         placeholder={`New Password (min. ${MIN_PASSWORD_LENGTH} characters)`}
-                        value={formData.password}
+                        value={formData.newPassword}
                         onChange={handleChange}
                     />
 
@@ -132,23 +140,21 @@ const ResetPassword = () => {
                         </div>
                     )}
 
-                    {/* Show link to request new reset if token error */}
-                    {message?.type === "error" && (
-                        <div className="auth-footer" style={{ marginTop: 0 }}>
-                            <Link to="/forgot-password">Request a new reset link</Link>
-                        </div>
-                    )}
-
                     <AuthButton
                         text="Update Password"
                         loading={loading}
                     />
 
                 </form>
+
             )}
+
+            <div className="auth-footer">
+                <Link to="/profile">Back to Profile</Link>
+            </div>
 
         </AuthLayout>
     );
 };
 
-export default ResetPassword;
+export default ChangePassword;

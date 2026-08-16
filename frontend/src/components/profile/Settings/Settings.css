@@ -398,3 +398,27 @@
 }
 
 }
+
+/* Change Password button */
+
+.change-password-settings-btn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    height: 52px;
+    padding: 0 28px;
+    border: none;
+    border-radius: 16px;
+    background: linear-gradient(135deg, #ff8a3d, #ff6a00);
+    color: white;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: .3s;
+    box-shadow: 0 8px 20px rgba(255, 138, 61, .30);
+}
+
+.change-password-settings-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 14px 28px rgba(255, 138, 61, .45);
+}

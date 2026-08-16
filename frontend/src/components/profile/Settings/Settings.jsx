@@ -1,14 +1,17 @@
 import "./Settings.css";
+import { useNavigate } from "react-router-dom";
 
 import {
   Store,
   Bell,
   Sparkles,
   Trash2,
-  AlertTriangle
+  AlertTriangle,
+  KeyRound,
 } from "lucide-react";
 
 const Settings = () => {
+  const navigate = useNavigate();
   return (
     <div className="settings-page">
 
@@ -17,6 +20,29 @@ const Settings = () => {
         <p>
           Customize your shopping experience and notification settings.
         </p>
+      </div>
+
+      {/* Change Password */}
+
+      <div className="settings-card">
+
+        <div className="card-title">
+          <KeyRound size={22} />
+          <h3>Password & Security</h3>
+        </div>
+
+        <p style={{ color: "#A7B0BF", marginBottom: "24px", fontSize: "14px" }}>
+          Update your password regularly to keep your account secure.
+        </p>
+
+        <button
+          className="change-password-settings-btn"
+          onClick={() => navigate("/change-password")}
+        >
+          <KeyRound size={18} />
+          Change Password
+        </button>
+
       </div>
 
       {/* Preferred Stores */}

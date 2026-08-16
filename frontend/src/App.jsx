@@ -8,6 +8,7 @@ import Signup from "./pages/auth/Signup.jsx";
 import Login from "./pages/auth/Login.jsx";
 import ForgotPassword from "./pages/auth/ForgotPassword.jsx";
 import ResetPassword from "./pages/auth/ResetPassword.jsx";
+import ChangePassword from "./pages/auth/ChangePassword.jsx";
 
 import SearchResults from "./pages/SearchResults.jsx";
 import Profile from "./pages/Profile.jsx";
@@ -61,6 +62,15 @@ function App() {
       <Route
         path="/reset-password/:token"
         element={<ResetPassword />}
+      />
+
+      <Route
+        path="/change-password"
+        element={
+            <ProtectedRoute>
+              <ChangePassword />
+            </ProtectedRoute>
+          }
       />
 
       <Route
