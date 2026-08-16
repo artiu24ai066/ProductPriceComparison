@@ -410,6 +410,8 @@ FOOTER
 
     align-items:center;
 
+    gap:12px;
+
 }
 
 .compare-btn{
@@ -463,6 +465,48 @@ FOOTER
 
 }
 
+.price-alert-btn{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:8px;
+
+    padding:13px 18px;
+
+    border:none;
+
+    border-radius:16px;
+
+    cursor:pointer;
+
+    color:white;
+
+    font-weight:600;
+
+    font-size:14px;
+
+    background:rgba(255,138,61,.15);
+
+    border:1px solid rgba(255,138,61,.25);
+
+    transition:.3s;
+
+    white-space:nowrap;
+
+}
+
+.price-alert-btn:hover{
+
+    background:rgba(255,138,61,.25);
+
+    border-color:rgba(255,138,61,.4);
+
+    transform:translateY(-1px);
+
+}
+
 /* ===========================
 RESPONSIVE
 =========================== */
@@ -503,11 +547,19 @@ RESPONSIVE
 
         align-items:flex-start;
 
-        gap:18px;
+        gap:12px;
 
     }
 
     .compare-btn{
+
+        width:100%;
+
+        justify-content:center;
+
+    }
+
+    .price-alert-btn{
 
         width:100%;
 

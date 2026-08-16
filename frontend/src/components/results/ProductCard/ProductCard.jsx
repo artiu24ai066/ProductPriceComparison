@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import "./ProductCard.css";
 
 import {
@@ -8,16 +8,21 @@ import {
   ChevronRight,
   Store,
   BadgePercent,
+  Bell,
 } from "lucide-react";
 
 import useAppDispatch from "../../../hooks/useAppDispatch";
 import useAppSelector from "../../../hooks/useAppSelector";
 import { buildWishlistKey, toggleWishlistItem } from "../../../features/wishlist/wishlistSlice";
+import PriceAlertModal from "../../common/PriceAlertModal/PriceAlertModal";
 
 const ProductCard = ({ product, onCompare = () => {}, isCompared = false }) => {
   const dispatch = useAppDispatch();
   const { isAuthenticated } = useAppSelector((state) => state.auth);
   const { items } = useAppSelector((state) => state.wishlist);
+  
+  // Price Alert modal state
+  const [isPriceAlertModalOpen, setIsPriceAlertModalOpen] = useState(false);
 
   const title = product?.canonicalTitle || product?.brand || "Product";
   const image =
@@ -35,6 +40,37 @@ const ProductCard = ({ product, onCompare = () => {}, isCompared = false }) => {
   const handleWishlistToggle = () => {
     if (!isAuthenticated || !product) return;
     dispatch(toggleWishlistItem(product));
+  };
+
+  const handlePriceAlertClick = () => {
+    if (!isAuthenticated) {
+      // Redirect to login - you may want to adjust this based on your routing
+      window.location.href = '/login';
+      return;
+    }
+    
+    if (!product) return;
+    
+    setIsPriceAlertModalOpen(true);
+  };
+
+  const handlePriceAlertModalClose = () => {
+    setIsPriceAlertModalOpen(false);
+  };
+
+  const handlePriceAlertSubmit = (targetPrice) => {
+    // For Part 1, we'll just log the data and close the modal
+    console.log('Price Alert Data:', {
+      product,
+      targetPrice,
+      productKey: buildWishlistKey(product),
+      selectedOffer: product?.sellers?.[0] || null
+    });
+    
+    setIsPriceAlertModalOpen(false);
+    
+    // TODO: This will be connected to backend API in later parts
+    alert(`Price alert set for ${targetPrice} - Backend connection coming in next part!`);
   };
 
   const lowestPrice = product?.priceStats?.lowest;
@@ -160,9 +196,29 @@ const ProductCard = ({ product, onCompare = () => {}, isCompared = false }) => {
             {isCompared ? "Remove" : "Compare"}
             <ChevronRight size={18} />
           </button>
+
+          <button
+            className="price-alert-btn"
+            type="button"
+            onClick={handlePriceAlertClick}
+            title="Set Price Alert"
+          >
+            <Bell size={16} />
+            Price Alert
+          </button>
         </div>
 
       </div>
+
+      {/* Price Alert Modal - Rendered at body level via portal */}
+      {isPriceAlertModalOpen && (
+        <PriceAlertModal
+          isOpen={isPriceAlertModalOpen}
+          onClose={handlePriceAlertModalClose}
+          onSubmit={handlePriceAlertSubmit}
+          product={product}
+        />
+      )}
 
     </div>
   );
