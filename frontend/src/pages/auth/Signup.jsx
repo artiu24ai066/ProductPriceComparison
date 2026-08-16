@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { User, Mail } from "lucide-react";
+import { User, Mail, Phone } from "lucide-react";
 
 import api from "../../api/axios";
 
@@ -11,12 +11,12 @@ import AuthButton from "../../components/auth/AuthButton";
 
 const Signup = () => {
     const navigate = useNavigate();
-
     const [loading, setLoading] = useState(false);
 
     const [formData, setFormData] = useState({
         fullname: "",
         email: "",
+        phone: "",
         password: "",
         confirmPassword: "",
     });
@@ -31,9 +31,9 @@ const Signup = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        const { fullname, email, password, confirmPassword } = formData;
+        const { fullname, email, phone, password, confirmPassword } = formData;
 
-        if (!fullname || !email || !password || !confirmPassword) {
+        if (!fullname || !email || !phone || !password || !confirmPassword) {
             alert("Please fill in all fields.");
             return;
         }
@@ -49,11 +49,11 @@ const Signup = () => {
             const response = await api.post("/users/register", {
                 fullname,
                 email,
+                phone,
                 password,
             });
 
             alert(response.data.message || "Account created successfully!");
-
             navigate("/login");
 
         } catch (error) {
@@ -90,6 +90,15 @@ const Signup = () => {
                     onChange={handleChange}
                 />
 
+                <AuthInput
+                    icon={Phone}
+                    type="tel"
+                    name="phone"
+                    placeholder="Phone Number (10 digits or +91XXXXXXXXXX)"
+                    value={formData.phone}
+                    onChange={handleChange}
+                />
+
                 <PasswordInput
                     name="password"
                     placeholder="Password"
@@ -113,10 +122,7 @@ const Signup = () => {
 
             <div className="auth-footer">
                 <span>Already have an account?</span>
-
-                <Link to="/login">
-                    Login
-                </Link>
+                <Link to="/login">Login</Link>
             </div>
 
         </AuthLayout>

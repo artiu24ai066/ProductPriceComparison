@@ -29,151 +29,107 @@ const generateAccessAndRefereshTokens = async(userId) => {
 
 
 
+// ─── Helpers ──────────────────────────────────────────────────────────────
+
+// Strips spaces, dashes, brackets — accepts 10–15 digit numbers with optional +
+const isValidPhone = (value = "") => {
+    const cleaned = value.replace(/[\s\-().]/g, "");
+    return /^\+?\d{10,15}$/.test(cleaned);
+};
+
+const normalizePhone = (value = "") =>
+    value.replace(/[\s\-().]/g, "").trim();
+
+// ─── registerUser ──────────────────────────────────────────────────────────
+
 const registerUser = asyncHandler(async (req, res) => {
-    // get user details from frontend
-    // validation - not empty
-    // check if user already exists: username, email
-    // check for images, check for avatar
-    // upload them to cloudinary 
-    // check avatar again
-    // create user object - create entry in db
-    // remove password and refresh token field from response
-    // check for user creation
-    // return res
-    
-    
+    const { fullname, email, phone, password } = req.body;
 
-    const { fullname, email, password } = req.body;
-    // console.log("email", email);
-
-
-
-    if (
-        [fullname, email, password].some((field) => field?.trim() === "")
-    ) {
-        throw new APIerror(400, "All fields are required")
+    if ([fullname, email, phone, password].some((f) => !f?.trim())) {
+        throw new APIerror(400, "All fields are required");
     }
 
+    if (!isValidPhone(phone)) {
+        throw new APIerror(400, "Please enter a valid phone number (10–15 digits)");
+    }
 
+    const normalizedPhone = normalizePhone(phone);
 
+    // Check email and phone uniqueness together in one query
     const existedUser = await User.findOne({
-        email,
-    })
+        $or: [
+            { email: email.toLowerCase().trim() },
+            { phone: normalizedPhone },
+        ],
+    });
+
     if (existedUser) {
-        throw new APIerror(409, "User with email or username already exists")
+        if (existedUser.email === email.toLowerCase().trim()) {
+            throw new APIerror(409, "An account with this email already exists");
+        }
+        throw new APIerror(409, "An account with this phone number already exists");
     }
-    
-
-
-    // const avatarLocalPath = req.files?.avatar[0]?.path;
-    //const coverImageLocalPath = req.files?.coverImage[0]?.path;
-
-    // let coverImageLocalPath;
-    // if (req.files && Array.isArray(req.files.coverImage) && req.files.coverImage.length > 0) {
-    //     coverImageLocalPath = req.files.coverImage[0].path
-    // }
-
-    // if (!avatarLocalPath) {
-    //     throw new APIerror(400, "Avatar file is required")
-    // }
-
-
-
-    // const avatar = await uploadOnCloudinary(avatarLocalPath)
-    // const coverImage = await uploadOnCloudinary(coverImageLocalPath)
-
-
-
-    // if (!avatar) {
-    //     throw new APIerror(400, "Avatar file is required")
-    // }
-
-
 
     const user = await User.create({
         fullname,
-        // avatar: avatar.url,
-        // coverImage: coverImage?.url || "",
-        email, 
+        email,
+        phone: normalizedPhone,
         password,
-    })
-
-
+    });
 
     const createdUser = await User.findById(user._id).select(
         "-password -refreshToken"
-    )
-
-
+    );
 
     if (!createdUser) {
-        throw new APIerror(500, "Something went wrong while registering the user")
+        throw new APIerror(500, "Something went wrong while registering the user");
     }
-
-
 
     return res.status(201).json(
         new APIresponse(200, createdUser, "User registered Successfully")
-    )
+    );
 });
 
 
 
 const loginUser = asyncHandler(async (req, res) => {
-    // req body -> data
-    // username or email
-    // find the user
-    // password check
-    // access and referesh token
-    // send cookie
+    // Accepts: { identifier, password }
+    // identifier can be email or phone number
+    const { identifier, password } = req.body;
 
-
-
-    const { email, password } = req.body
-    console.log(email);
-
-
-
-    if (!email || !password) {
-        throw new APIerror(400, "email and password are required")
+    if (!identifier?.trim() || !password) {
+        throw new APIerror(400, "Email/phone and password are required");
     }
-    
-    // an alternative of above code:
-    // if (!(username || email)) {
-    //     throw new APIerror(400, "username or email is required")   
-    // }
 
+    const cleaned = identifier.trim();
 
+    // Detect whether the identifier is an email or a phone number
+    const isEmail = cleaned.includes("@");
+    const query   = isEmail
+        ? { email: cleaned.toLowerCase() }
+        : { phone: normalizePhone(cleaned) };
 
-    const user = await User.findOne({
-        email
-    })
+    const user = await User.findOne(query);
 
     if (!user) {
-        throw new APIerror(404, "User does not exist")
+        throw new APIerror(404, "No account found with this email or phone number");
     }
 
-
-
-    const isPasswordValid = await user.isPasswordCorrect(password)
+    const isPasswordValid = await user.isPasswordCorrect(password);
 
     if (!isPasswordValid) {
-        throw new APIerror(401, "Invalid user credentials")
+        throw new APIerror(401, "Invalid credentials");
     }
 
+    const { accessToken, refreshToken } = await generateAccessAndRefereshTokens(user._id);
 
-
-    const { accessToken, refreshToken } = await generateAccessAndRefereshTokens(user._id)
-
-    const loggedInUser = await User.findById(user._id).select("-password -refreshToken")
-
-
+    const loggedInUser = await User.findById(user._id).select("-password -refreshToken");
 
     const options = {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
         sameSite: "lax",
-    }
+    };
 
     return res
         .status(200)
@@ -182,12 +138,10 @@ const loginUser = asyncHandler(async (req, res) => {
         .json(
             new APIresponse(
                 200,
-                {
-                    user: loggedInUser, accessToken, refreshToken
-                },
+                { user: loggedInUser, accessToken, refreshToken },
                 "User logged In Successfully"
             )
-        )
+        );
 });
 
 
@@ -299,6 +253,7 @@ const getCurrentUser = asyncHandler(async(req, res) => {
 
 
 const updateAccountDetails = asyncHandler(async(req, res) => {
+    // phone is intentionally omitted — it must never be changed after registration
     const { fullname, username, address } = req.body;
 
     if (!fullname?.trim()) {
@@ -317,6 +272,9 @@ const updateAccountDetails = asyncHandler(async(req, res) => {
         if (address.city    !== undefined) updateFields["address.city"]    = address.city.trim();
         if (address.pincode !== undefined) updateFields["address.pincode"] = address.pincode.trim();
     }
+
+    // Safety: ensure phone is never in the update set
+    delete updateFields.phone;
 
     const user = await User.findByIdAndUpdate(
         req.user?._id,

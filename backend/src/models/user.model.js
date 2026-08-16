@@ -40,6 +40,12 @@ const userSchema = new Schema(
             required: true,
         },
 
+        phone: {
+            type: String,
+            default: "",
+            trim: true,
+        },
+
         refreshToken: {
             type: String,
         },
@@ -54,6 +60,13 @@ const userSchema = new Schema(
     {
         timestamps: true,
     }
+);
+
+// Sparse unique index — only enforces uniqueness when phone has a value,
+// so existing users with no phone (empty string) are not affected.
+userSchema.index(
+    { phone: 1 },
+    { unique: true, sparse: true, partialFilterExpression: { phone: { $gt: "" } } }
 );
 
 userSchema.pre("save", async function (next) {

@@ -197,12 +197,20 @@ const PersonalInfo = ({ user, sectionRef }) => {
             </div>
           </div>
 
-          {/* Phone */}
+          {/* Phone — read-only, from database */}
           <div className="input-box">
-            <label>Phone</label>
-            <div className="profile-input">
+            <label>
+              Phone <span className="readonly-badge">Read-only</span>
+            </label>
+            <div className="profile-input profile-input--readonly">
               <Phone size={18} />
-              <input type="text" defaultValue="+91 9876543210" />
+              <input
+                type="tel"
+                value={user?.phone || ""}
+                readOnly
+                tabIndex={-1}
+                placeholder="Not provided"
+              />
             </div>
           </div>
 

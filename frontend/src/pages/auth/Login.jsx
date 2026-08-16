@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Mail } from "lucide-react";
+import { AtSign } from "lucide-react";
 
 import api from "../../api/axios";
 
@@ -21,14 +21,13 @@ const Login = () => {
     const [loading, setLoading] = useState(false);
 
     const [formData, setFormData] = useState({
-        email: "",
+        identifier: "",   // email OR phone number
         password: "",
         rememberMe: false,
     });
 
     const handleChange = (e) => {
         const { name, value, type, checked } = e.target;
-
         setFormData((prev) => ({
             ...prev,
             [name]: type === "checkbox" ? checked : value,
@@ -38,8 +37,8 @@ const Login = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        if (!formData.email || !formData.password) {
-            alert("Please enter your email and password.");
+        if (!formData.identifier || !formData.password) {
+            alert("Please enter your email or phone number and password.");
             return;
         }
 
@@ -47,16 +46,13 @@ const Login = () => {
             setLoading(true);
 
             const response = await api.post("/users/login", {
-                email: formData.email,
+                identifier: formData.identifier,
                 password: formData.password,
             });
 
             const { accessToken, user } = response.data.data;
 
-            const storage = formData.rememberMe
-                ? localStorage
-                : sessionStorage;
-
+            const storage = formData.rememberMe ? localStorage : sessionStorage;
             storage.setItem("accessToken", accessToken);
             storage.setItem("user", JSON.stringify(user));
 
@@ -68,7 +64,7 @@ const Login = () => {
         } catch (error) {
             alert(
                 error.response?.data?.message ||
-                "Invalid email or password."
+                "Invalid credentials. Please try again."
             );
         } finally {
             setLoading(false);
@@ -83,11 +79,11 @@ const Login = () => {
             <form onSubmit={handleSubmit} className="auth-form">
 
                 <AuthInput
-                    icon={Mail}
-                    type="email"
-                    name="email"
-                    placeholder="Email Address"
-                    value={formData.email}
+                    icon={AtSign}
+                    type="text"
+                    name="identifier"
+                    placeholder="Email or Phone Number"
+                    value={formData.identifier}
                     onChange={handleChange}
                 />
 
@@ -101,22 +97,16 @@ const Login = () => {
                 <div className="login-options">
 
                     <label className="remember-me">
-
                         <input
                             type="checkbox"
                             name="rememberMe"
                             checked={formData.rememberMe}
                             onChange={handleChange}
                         />
-
                         <span>Remember Me</span>
-
                     </label>
 
-                    <Link
-                        to="/forgot-password"
-                        className="forgot-link"
-                    >
+                    <Link to="/forgot-password" className="forgot-link">
                         Forgot Password?
                     </Link>
 
@@ -130,13 +120,8 @@ const Login = () => {
             </form>
 
             <div className="auth-footer">
-
                 <span>Don't have an account?</span>
-
-                <Link to="/signup">
-                    Create One
-                </Link>
-
+                <Link to="/signup">Create One</Link>
             </div>
 
         </AuthLayout>
